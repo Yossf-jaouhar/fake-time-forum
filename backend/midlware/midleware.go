@@ -16,7 +16,6 @@ func Authorization(next http.Handler, db *sql.DB) http.HandlerFunc {
 			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
 			return
 		}
-
 		var userId int
 		var userName string
 		var expired time.Time

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"forum/backend/errors"
 )
 
 type Comment struct {
@@ -49,7 +51,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// For simplicity, we assume the post_id is provided as a query parameter
 	postID := r.URL.Query().Get("post_id")
 	if postID == "" {
-		http.Error(w, "Missing post_id query parameter", http.StatusBadRequest)
+		errors.SendError("post id missing", http.StatusBadRequest, w)
 		return
 	}
 
@@ -57,21 +59,21 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var postIDInt int
 	_, err := fmt.Sscanf(postID, "%d", &postIDInt)
 	if err != nil {
-		http.Error(w, "Invalid post_id format", http.StatusBadRequest)
+		errors.SendError("post id invalid", http.StatusBadRequest, w)
 		return
 	}
 
 	// Fetch comments for the given post ID
 	comments, err := fetchComments(postIDInt, db)
 	if err != nil {
-		http.Error(w, "Error fetching comments", http.StatusInternalServerError)
+		errors.SendError("error fetching comments", http.StatusInternalServerError, w)
 		return
 	}
 
 	// Convert the comments to JSON
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(comments); err != nil {
-		http.Error(w, "Error encoding comments", http.StatusInternalServerError)
+		errors.SendError("error encoding comments", http.StatusInternalServerError, w)
 		return
 	}
 }

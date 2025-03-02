@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"forum/backend/errors"
 )
 
 type Post struct {
@@ -118,7 +120,7 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if pageParam != "" {
 		_, err := fmt.Sscanf(pageParam, "%d", &page)
 		if err != nil || page < 1 {
-			http.Error(w, "Invalid page number", http.StatusBadRequest)
+			errors.SendError("invalde page", http.StatusBadRequest, w)
 			return
 		}
 	}
@@ -126,14 +128,14 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Fetch posts for the given page
 	posts, err := fetchPosts(page, db)
 	if err != nil {
-		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
+		errors.SendError("Error fetching posts", http.StatusInternalServerError, w)
 		return
 	}
 
 	// Respond with the posts in JSON format
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(posts); err != nil {
-		http.Error(w, "Error encoding posts", http.StatusInternalServerError)
+		errors.SendError("Error encoding posts", http.StatusInternalServerError, w)
 		return
 	}
 }

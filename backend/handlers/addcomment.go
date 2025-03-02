@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"forum/backend/errors"
 )
 
 type comment struct {
@@ -22,17 +24,18 @@ func AddComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	userID := r.Context().Value("userId").(int)
 	err := json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		errors.SendError("only accept json format", http.StatusBadRequest, w)
 		return
 	}
 	if comment.Comment == "" || len([]rune(comment.Comment)) > 500 || !CheckIdExists(db, comment.PostId, "Posts") {
+		errors.SendError("please fill all the required fields", http.StatusBadRequest, w)
 		return
 	}
 
 	err = AddCommentsInDB(db, userID, comment.PostId, comment.Comment)
 	if err != nil {
-		// err
-		return
+	errors.SendError("internal server err", 500, w)
+	return
 	}
 }
 

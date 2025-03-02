@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"forum/backend/errors"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -34,21 +35,21 @@ func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	err := json.NewDecoder(r.Body).Decode(&loginDetails)
 	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		errors.SendError( "Invalid JSON format", http.StatusBadRequest,w)
 		return
 	}
 
 	// Get the user by email or nickname
 	user, err := getUserByEmailOrNickname(loginDetails.EmailOrNickname, db)
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		errors.SendError( "Invalid credentials", http.StatusUnauthorized,w)
 		return
 	}
 
 	// Compare the provided password with the stored hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginDetails.Password))
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		errors.SendError( "Invalid credentials", http.StatusUnauthorized,w)
 		return
 	}
 

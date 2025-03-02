@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	chat "forum/backend/chatt"
 	"forum/backend/database"
 	"forum/backend/handlers"
 	"forum/backend/midlware"
@@ -10,6 +11,7 @@ import (
 
 func main() {
 	db := database.CreateTables()
+	clients := chat.NewClients()
 	http.HandleFunc("/frontend", handlers.ServerStatic)
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) { handlers.LogoutHandler(w, r, db) })
@@ -19,6 +21,7 @@ func main() {
 	}), db))
 	http.HandleFunc("/chat", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			chat.ChatHandler(w, r, db, clients)
 		}), db))
 	http.HandleFunc("/addpost", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

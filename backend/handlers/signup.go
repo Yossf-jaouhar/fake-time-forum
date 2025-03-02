@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"forum/backend/errors"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -43,25 +45,25 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		errors.SendError("Invalid JSON format", http.StatusBadRequest, w)
 		return
 	}
 
 	// Check if email or nickname is already taken
 	emailExists, nicknameExists := checkIfEmailOrNicknameExists(user.Email, user.Nickname, db)
 	if emailExists {
-		http.Error(w, "Email is already registered", http.StatusConflict)
+		errors.SendError("Email is already registered", http.StatusConflict, w)
 		return
 	}
 	if nicknameExists {
-		http.Error(w, "Nickname is already taken", http.StatusConflict)
+		errors.SendError("Nickname is already taken", http.StatusConflict, w)
 		return
 	}
 
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "Error hashing password", http.StatusInternalServerError)
+		errors.SendError("Error hashing password", http.StatusInternalServerError, w)
 		return
 	}
 
@@ -69,7 +71,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	_, err = db.Exec("INSERT INTO users (age, email, password, firstName, lastName, nickname) VALUES (?, ?, ?, ?, ?, ?)",
 		user.Age, user.Email, hashedPassword, user.FirstName, user.LastName, user.Nickname)
 	if err != nil {
-		http.Error(w, "Error saving user to database", http.StatusInternalServerError)
+		errors.SendError("Error saving user to database", http.StatusInternalServerError, w)
 		return
 	}
 
