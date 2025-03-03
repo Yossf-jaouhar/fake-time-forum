@@ -11,11 +11,11 @@ import (
 
 func main() {
 	db := database.CreateTables()
-	clients := chat.NewClients()
+	clients := chat.NewClients(db)
 	http.HandleFunc("/frontend", handlers.ServerStatic)
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
-	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) { handlers.LogoutHandler(w, r, db) })
-	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) { handlers.RegisterHandler(w, r, db) })
+	http.HandleFunc("POST /sign-in", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
+	http.HandleFunc("POST /logout", func(w http.ResponseWriter, r *http.Request) { handlers.LogoutHandler(w, r, db) })
+	http.HandleFunc("POST /signup", func(w http.ResponseWriter, r *http.Request) { handlers.RegisterHandler(w, r, db) })
 	http.HandleFunc("/", midlware.Authorization(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handlers.Home(w, r)
 	}), db))

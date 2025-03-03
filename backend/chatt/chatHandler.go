@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"forum/backend/errors"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -16,18 +18,18 @@ var upgrader = websocket.Upgrader{
 func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Clients) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		
 		return
 	}
+	Clients.Map[r.Context().Value("username").(string)].Conn = append(Clients.Map[r.Context().Value("username").(string)].Conn, conn)
+	msg := &Message{}
 	for {
-		messageType, p, err := conn.ReadMessage()
+		err = conn.ReadJSON(msg)
 		if err != nil {
 			log.Println(err)
-			return
+			continue
 		}
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
+		if err := Clients.SendMsg(msg, db); err != "" {
+			errors.SendError(err, http.StatusBadRequest, w)
 		}
 	}
 }

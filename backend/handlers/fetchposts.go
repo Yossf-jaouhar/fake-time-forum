@@ -115,7 +115,7 @@ func fetchCategoriesForPost(postID int, db *sql.DB) ([]string, error) {
 // Handler for fetching posts
 func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Parse page query parameter (default to 1 if not provided)
-	page := 1
+	page := 1 
 	pageParam := r.URL.Query().Get("page")
 	if pageParam != "" {
 		_, err := fmt.Sscanf(pageParam, "%d", &page)
