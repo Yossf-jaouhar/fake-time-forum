@@ -92,7 +92,7 @@
                 <button>
                     <i class="fa-regular fa-message"></i>  youssef    
                 </button>
-                
+
                 <button>
                     <i class="fa-regular fa-message"></i>  youssef    
                 </button>
@@ -128,46 +128,77 @@
             </button>
             <div class="potess">
                 <div class="post">
-                    postes
+                   <div class="userbar">
+                       <ul>
+                            <div class="imageandname">
+                                <li class="userimage"><i class="fa-solid fa-user"></i></i></li>
+                                <li  class="username">{{.CreatedBy}}</li>
+                            </div>
+                            <li class="creatdate">creat at : {{.Date}}</li>
+                       </ul>
+                   </div>
+                   <div class="content">
+                         <h2> {{.Title}} </h2>
+                         <p>
+                             {{.Content}}
+                         </p>
+                    </div>
+                    <div class="categoryandlikes">
+                        <div class="category">
+                            <p>categorys:{{.Categories}}</p>
+    
+                        </div>
+                        <div class="likes">
+                            <div class="like">
+                                <span>{{.Like}}</span>
+                                <form action="/addlike" method="post">
+                                  <input style="display: none" checked value="{{.ID}}" name="postID" type="text" />
+                                  <input style="display: none" checked value="like" name="status" type="text" />
+                                  <button type="submit">
+                                    {{if .UserLiked}}
+                                    <i class="fa-solid fa-thumbs-up likecolor"></i>
+                                    {{else}}
+                                    <i class="fa-regular fa-thumbs-up"></i>
+                                    {{end}}
+                                  </button>
+                                </form>
+                              </div>
+                              <div class="like">
+                                <span>{{.Dislike}}</span>
+                                <form action="/addlike" method="post">
+                                  <input style="display: none" checked value="{{.ID}}" name="postID" type="text" />
+                                  <input style="display: none" checked value="dislike" name="status" type="text" />
+                                  <button type="submit">
+                                    {{if .UserDisliked}}
+                                    <i class="fa-solid fa-thumbs-down likecolor"></i>
+                                    {{else}}
+                                    <i class="fa-regular fa-thumbs-down"></i>
+                                    {{end}}
+                                  </button>
+                                </form>
+                              </div>
+                              <div class="like">
+                                <span>{{.NemberOfComment}}</span>
+                                
+                                <button popovertarget="comments-{{.ID}}" >
+                                    <i class="fa-solid fa-comments"></i>
+                                </button>
+                              </div>
+                              <div class="creatcomment" popover id="comments-{{.ID}}">
+                                <div style="background-color: #00e20b;">
+                                    {{range .Comments}}
+                                       <p>{{.Content}}</p>
+                                    {{end}}
+                                </div>
+                                <form action="/addComment" method="post">
+                                    <input type="text" style="display: none" value="{{.ID}}" name="postID">
+                                    <input type="text" name="comment" placeholder="write the comment">
+                                   <button type="submit">nnnn</button>
+                                </form>
+                              </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                <div class="post">
-                    postes
-                </div>
-                     
-             
             </div>
             
 
