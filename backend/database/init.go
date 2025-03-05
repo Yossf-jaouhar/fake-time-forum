@@ -10,7 +10,7 @@ import (
 )
 
 func CreateTables() *sql.DB {
-	db, err := sql.Open("sqlite3", "./forum.db")
+	db, err := sql.Open("sqlite3", "backend/database/forum.db")
 	if err != nil {
 		log.Fatal("error opening database:", err)
 	}
