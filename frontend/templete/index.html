@@ -56,76 +56,38 @@
                 <button popovertarget="create-post" >
                     <i class="fa-regular fa-message"></i>  youssef    
                 </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
-                <button>
-                    <i class="fa-regular fa-message"></i>  youssef    
-                </button>
                 
             </div>
             <div id="create-post" popover class="mesg">
-                hhhhhhhhhh
+                
             </div>
         </section>
 
         <article>
-            <button>
-                <i class="fa-solid fa-square-plus"></i> creatpost
-            </button>
+            <div class="creat-post">
+                {{if .IsLogged}}
+                    <button popovertarget="create-post"  ><i class="fa-duotone fa-solid fa-plus fa-rotate-90"></i> Add_Post</button>
+                {{end}}    
+            </div>
+          
+            <div id="create-post" popover class="formtocreatpost">
+                <form action="/addPost" method="post">
+                        <div class="title">
+                            <input placeholder="title" name="title" type="text" maxlength="50" required />
+                        </div>
+                        <div class="content">
+                            <textarea maxlength="1000" placeholder="content" name="content" required></textarea>
+                        </div>
+                        <div class="categories">
+                            {{range .Categories}}
+                            <input name="category" value="{{.ID}}" style="display: none" type="checkbox" id="{{.ID}}" />
+                            <label for="{{.ID}}">{{.NameCategory}}</label> {{end}}
+                        </div>
+                        <div class="btn">
+                            <button type="submit">Create</button>
+                        </div>
+                </form>
+            </div>
             <div class="potess">
                 <div class="post">
                    <div class="userbar">
