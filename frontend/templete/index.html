@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="frontend/css/index.css">
+    <link rel="stylesheet" href="frontend/css/index.css" id="home.css">
 
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" 
@@ -13,6 +13,7 @@
 </head>
 <body>
    <script src="frontend/js/login.js"></script>
+   <script src="frontend/js/register.js"></script>
 
     <header>
         <div class="contentofthebar">
@@ -26,7 +27,7 @@
                     </a>
                 </div>
                 <div class="forbuttons">
-                        <button id="login">
+                        <button class="login" id="login">
                             <i class="fa-solid fa-right-to-bracket"></i>
                             login
                         </button>
@@ -34,7 +35,7 @@
      
         
           
-                        <button>
+                        <button class="register" id="register">
                             <i class="fa-solid fa-user-plus"></i>
                             register
                         </button>
@@ -51,40 +52,18 @@
             
             <p class="ppp">  <i class="fa-solid fa-bell"></i>you chats</p> 
             <div class="mesgfrom">
-                <button popovertarget="create-post" >
+                <button>
                     <i class="fa-regular fa-message"></i>  youssef    
                 </button>
-                
-            </div>
-            <div id="create-post" popover class="mesg">
                 
             </div>
         </section>
 
         <article>
             <div class="creat-post">
-                {{if .IsLogged}}
-                    <button popovertarget="create-post"  ><i class="fa-duotone fa-solid fa-plus fa-rotate-90"></i> Add_Post</button>
-                {{end}}    
-            </div>
-          
-            <div id="create-post" popover class="formtocreatpost">
-                <form action="/addPost" method="post">
-                        <div class="title">
-                            <input placeholder="title" name="title" type="text" maxlength="50" required />
-                        </div>
-                        <div class="content">
-                            <textarea maxlength="1000" placeholder="content" name="content" required></textarea>
-                        </div>
-                        <div class="categories">
-                            {{range .Categories}}
-                            <input name="category" value="{{.ID}}" style="display: none" type="checkbox" id="{{.ID}}" />
-                            <label for="{{.ID}}">{{.NameCategory}}</label> {{end}}
-                        </div>
-                        <div class="btn">
-                            <button type="submit">Create</button>
-                        </div>
-                </form>
+               
+                    <button class="Add_Post" ><i class="fa-duotone fa-solid fa-plus fa-rotate-90"></i> Add_Post</button>
+              
             </div>
             <div class="potess">
                 <div class="post">
@@ -92,71 +71,10 @@
                        <ul>
                             <div class="imageandname">
                                 <li class="userimage"><i class="fa-solid fa-user"></i></i></li>
-                                <li  class="username">{{.CreatedBy}}</li>
+                                <li  class="username"></li>
                             </div>
-                            <li class="creatdate">creat at : {{.Date}}</li>
+                            <li class="creatdate"></li>
                        </ul>
-                   </div>
-                   <div class="content">
-                         <h2> {{.Title}} </h2>
-                         <p>
-                             {{.Content}}
-                         </p>
-                    </div>
-                    <div class="categoryandlikes">
-                        <div class="category">
-                            <p>categorys:{{.Categories}}</p>
-    
-                        </div>
-                        <div class="likes">
-                            <div class="like">
-                                <span>{{.Like}}</span>
-                                <form action="/addlike" method="post">
-                                  <input style="display: none" checked value="{{.ID}}" name="postID" type="text" />
-                                  <input style="display: none" checked value="like" name="status" type="text" />
-                                  <button type="submit">
-                                    {{if .UserLiked}}
-                                    <i class="fa-solid fa-thumbs-up likecolor"></i>
-                                    {{else}}
-                                    <i class="fa-regular fa-thumbs-up"></i>
-                                    {{end}}
-                                  </button>
-                                </form>
-                              </div>
-                              <div class="like">
-                                <span>{{.Dislike}}</span>
-                                <form action="/addlike" method="post">
-                                  <input style="display: none" checked value="{{.ID}}" name="postID" type="text" />
-                                  <input style="display: none" checked value="dislike" name="status" type="text" />
-                                  <button type="submit">
-                                    {{if .UserDisliked}}
-                                    <i class="fa-solid fa-thumbs-down likecolor"></i>
-                                    {{else}}
-                                    <i class="fa-regular fa-thumbs-down"></i>
-                                    {{end}}
-                                  </button>
-                                </form>
-                              </div>
-                              <div class="like">
-                                <span>{{.NemberOfComment}}</span>
-                                
-                                <button popovertarget="comments-{{.ID}}" >
-                                    <i class="fa-solid fa-comments"></i>
-                                </button>
-                              </div>
-                              <div class="creatcomment" popover id="comments-{{.ID}}">
-                                <div style="background-color: #00e20b;">
-                                    {{range .Comments}}
-                                       <p>{{.Content}}</p>
-                                    {{end}}
-                                </div>
-                                <form action="/addComment" method="post">
-                                    <input type="text" style="display: none" value="{{.ID}}" name="postID">
-                                    <input type="text" name="comment" placeholder="write the comment">
-                                   <button type="submit">nnnn</button>
-                                </form>
-                              </div>
-                        </div>
                     </div>
                 </div>
             </div>

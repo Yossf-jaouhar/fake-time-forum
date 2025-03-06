@@ -1,3 +1,7 @@
+:root {
+    --btn2: #D84040;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -67,8 +71,8 @@ header .contentofthebar .rightbar .forbuttons {
 }
 
 
-header .contentofthebar .rightbar .forbuttons  button {
-    background-color: red;
+header .contentofthebar .rightbar .forbuttons  .login  {
+    background-color: var(--btn2);
     color: aliceblue;
     width: 120px;
     height: 30px;
@@ -76,10 +80,17 @@ header .contentofthebar .rightbar .forbuttons  button {
     font-weight: bolder;
     font-family: sans-serif;
     letter-spacing: 1px;
-    
-
 }
-
+header .contentofthebar .rightbar .forbuttons  .register {
+    background-color: var(--btn2);
+    color: aliceblue;
+    width: 120px;
+    height: 30px;
+    font-size: 18px;
+    font-weight: bolder;
+    font-family: sans-serif;
+    letter-spacing: 1px;
+}
 main {
     width: 75%;
     margin: auto;
@@ -182,8 +193,8 @@ main article {
 }
 
 
-main article button {
-    background-color: rgb(206, 67, 67);
+main article .Add_Post {
+    background-color: var(--btn2);
     width: 30%;
     height: 50px;
     border-radius: 15px;
