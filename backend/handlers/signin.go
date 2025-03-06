@@ -28,11 +28,13 @@ func getUserByEmailOrNickname(emailOrNickname string, db *sql.DB) (*User, error)
 
 func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Parse the incoming JSON data
+	fmt.Println("hhhhhhhhhh")
 	var loginDetails struct {
 		EmailOrNickname string `json:"emailOrNickname"`
 		Password        string `json:"password"`
 	}
 
+	fmt.Println(loginDetails.EmailOrNickname, loginDetails.Password)
 	err := json.NewDecoder(r.Body).Decode(&loginDetails)
 	if err != nil {
 		errors.SendError( "Invalid JSON format", http.StatusBadRequest,w)

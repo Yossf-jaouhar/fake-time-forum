@@ -64,12 +64,10 @@ header .contentofthebar .rightbar .forbuttons {
     align-items: center;
     justify-content: space-between;
     margin-right: 100px;
-    width: 150px;
-    
 }
 
 
-header .contentofthebar .rightbar .forbuttons  form button {
+header .contentofthebar .rightbar .forbuttons  button {
     background-color: red;
     color: aliceblue;
     width: 120px;

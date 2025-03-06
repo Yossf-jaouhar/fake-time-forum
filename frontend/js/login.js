@@ -82,4 +82,53 @@ body {
         </form>
     </div>
 `
-//const c = document.getElementById("contne").outerHTML = login
+document.addEventListener("DOMContentLoaded", function () {
+    const loginButton = document.getElementById("login");
+    if (loginButton) {
+        loginButton.addEventListener("click", function () {
+            document.body.innerHTML = login;
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loginForm = document.getElementById("loginForm");
+
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        console.log(email, password)
+
+        if (!email || !password) {
+            return;
+        }
+
+
+        const userData = {
+            email: email,
+            password: password
+        };
+
+
+        try {
+            const response = await fetch("http://localhost:8080/sign-in", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            });
+
+            const data = await response.json();
+
+
+        } catch (error) {
+            console.error(error);
+
+        }
+    });
+});
