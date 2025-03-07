@@ -12,5 +12,8 @@ func Home(w http.ResponseWriter, r *http.Request , db *sql.DB) {
 		errors.SendError("method not allowed", http.StatusMethodNotAllowed, w)
 		return
 	}
+	if r.Method == http.MethodPost {
+		print("goooooooooooooood")
+	}
 	http.ServeFile(w, r, "./frontend/templete/index.html")
 }

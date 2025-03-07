@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
 function setupLoginEvent() {
     const loginBtn = document.getElementById("loginbtn");
     if (loginBtn) {
-        console.log("hhhhhhhhhh")
         loginBtn.addEventListener("click", function (event) {
             event.preventDefault(); 
             
@@ -61,6 +60,20 @@ function setupLoginEvent() {
 
             console.log("Email:", email);
             console.log("Password:", password);
+
+            const loginData = {
+                email: email,
+                password: password
+            };
+
+            fetch("http://localhost:8080/" , {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body : JSON.stringify(loginData)
+            })
+
         });
     }
 }
