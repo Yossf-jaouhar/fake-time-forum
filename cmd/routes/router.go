@@ -8,8 +8,7 @@ package routes
 // 	"net/http"
 // )
 
-// func RegisterRoutes(db *sql.DB, clients  chat.Client) {
-
+// func RegisterRoutes(db *sql.DB, clients  chat.Client)
 // 	http.HandleFunc("/frontend", handlers.ServerStatic)
 // 	http.HandleFunc("POST /sign-in", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
 // 	http.HandleFunc("POST /logout", func(w http.ResponseWriter, r *http.Request) { handlers.LogoutHandler(w, r, db) })
@@ -17,8 +16,7 @@ package routes
 // 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 // 		handlers.Home(w, r, db)
 // 	})
-// 	http.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("frontend"))))
-
+// 	http.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("frontend"))
 // 	http.HandleFunc("/chat", midlware.Authorization(
 // 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 // 			chat.ChatHandler(w, r, db, clients)
@@ -40,4 +38,3 @@ package routes
 // 			handlers.GetCommentsHandler(w, r, db)
 // 		}), db))
 // 	http.HandleFunc("/frontend/css/", handlers.StaticHandler)
-// }

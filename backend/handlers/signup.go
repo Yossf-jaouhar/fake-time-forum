@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -20,6 +21,17 @@ type User struct {
 	LastName  string `json:"lastName"`
 	Gender    string `json:"gender"`
 	Nickname  string `json:"nickname"`
+}
+
+type datafromregister struct {
+	Username  string      `json:"username"`
+	Email     string      `json:"email"`
+	Password  string      `json:"password"`
+	Age       json.Number `json:"age"`
+	FirstName string      `json:"firstName"`
+	LastName  string      `json:"lastName"`
+	Gender    string      `json:"gender"`
+	Nickname  string      `json:"nickname"`
 }
 
 func checkIfEmailOrNicknameExists(email, nickname string, db *sql.DB) (bool, bool) {
@@ -42,15 +54,16 @@ func checkIfEmailOrNicknameExists(email, nickname string, db *sql.DB) (bool, boo
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Parse the incoming JSON data
-	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	var data datafromregister
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
+		fmt.Println(err)
 		errors.SendError("Invalid JSON format", http.StatusBadRequest, w)
 		return
 	}
 
 	// Check if email or nickname is already taken
-	emailExists, nicknameExists := checkIfEmailOrNicknameExists(user.Email, user.Nickname, db)
+	emailExists, nicknameExists := checkIfEmailOrNicknameExists(data.Email, data.Nickname, db)
 	if emailExists {
 		errors.SendError("Email is already registered", http.StatusConflict, w)
 		return
@@ -61,21 +74,27 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 	if err != nil {
 		errors.SendError("Error hashing password", http.StatusInternalServerError, w)
 		return
 	}
 
 	// Insert the new user into the database
-	_, err = db.Exec("INSERT INTO users (age, email, password, firstName, lastName, nickname) VALUES (?, ?, ?, ?, ?, ?)",
-		user.Age, user.Email, hashedPassword, user.FirstName, user.LastName, user.Nickname)
+	_, err = db.Exec("INSERT INTO users (age, email, password, fisrtName, lastName, gender, nickname) VALUES (?, ?,?, ?, ?, ?, ?)",
+		data.Age, data.Email, hashedPassword, data.FirstName, data.LastName, data.Gender, data.Nickname)
 	if err != nil {
 		errors.SendError("Error saving user to database", http.StatusInternalServerError, w)
 		return
 	}
 
-	// Send a success response
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("User registered successfully"))
+	fmt.Println("goooood")
+	// Send a success response with JSON
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "User registered successfully",
+	})
+
 }
