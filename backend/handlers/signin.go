@@ -44,6 +44,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Get the user by email or nickname
 	user, err := getUserByEmailOrNickname(loginDetails.EmailOrNickname, db)
 	if err != nil {
+		fmt.Println("hhh is error")
 		errors.SendError( "Invalid credentials", http.StatusUnauthorized,w)
 		return
 	}

@@ -13,6 +13,9 @@ import (
 func main() {
 	db := database.CreateTables()
 	clients := chat.NewClients(db)
+
+	//routes.RegisterRoutes(db)
+
 	http.HandleFunc("/frontend", handlers.ServerStatic)
 	http.HandleFunc("POST /sign-in", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
 	http.HandleFunc("POST /logout", func(w http.ResponseWriter, r *http.Request) { handlers.LogoutHandler(w, r, db) })
