@@ -1,3 +1,5 @@
+import { registerfunc } from './register.js';
+
 const login = `
 <body>
     <div class="login-container">
@@ -5,7 +7,7 @@ const login = `
             <div id="emailpassword">
                 <div id="inputemail" class="input-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" placeholder="Enter your email">
+                    <input type="email" id="email" placeholder="Enter your email or Nickname">
                     <span id="emailError" class="error-message">Please enter a valid email</span>
                 </div>
                 <div id="inputpassword" class="input-group">
@@ -20,29 +22,24 @@ const login = `
 `
 
 document.addEventListener("DOMContentLoaded", function () {
-    
-    const loginButton = document.getElementById("login")
-    if (loginButton) {
-        loginButton.addEventListener("click", function () {
-            document.getElementById("home.css").href = "frontend/css/login.css"
-            document.body.innerHTML = login
-            setupLoginEvent()
-        })
-       
-    }
-
-    
-
-   
-
+    loginfunc()
 })
-
-function setupLoginEvent() {
+function loginfunc() {
+        const loginButton = document.getElementById("login")
+        if (loginButton) {
+            loginButton.addEventListener("click", function () {
+                document.getElementById("home.css").href = "frontend/css/login.css"
+                document.body.innerHTML = login
+                setupLoginEvent()
+            })
+        } 
+}
+async function setupLoginEvent() { 
     const loginBtn = document.getElementById("loginbtn");
     if (loginBtn) {
-        loginBtn.addEventListener("click", function (event) {
-            event.preventDefault(); 
-            
+        loginBtn.addEventListener("click", async function (event) {
+            event.preventDefault();
+
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
 
@@ -58,22 +55,37 @@ function setupLoginEvent() {
                 document.getElementById("passwordError").style.display = "none";
             }
 
-            console.log("Email:", email);
-            console.log("Password:", password);
-
             const loginData = {
-                email: email,
+                emailOrNickname: email,
                 password: password
             };
 
-            fetch("http://localhost:8080/" , {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body : JSON.stringify(loginData)
-            })
+            try {
+                const response = await fetch("http://localhost:8080/sign-in", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(loginData)
+                });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Response from server:", data);
+
+                if (data.success) {
+                    window.location.href = "/dashboard";
+                } else {
+                    console.log("User not found. Redirecting to register...");
+                    registerfunc();
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                registerfunc(); 
+            }
         });
     }
 }
