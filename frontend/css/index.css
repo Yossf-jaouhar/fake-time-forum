@@ -234,10 +234,73 @@ main article .potess::-webkit-scrollbar-thumb:hover {
 }    
 
 main article .potess .post {
+    box-shadow: 5px 5px 10px black;
     margin-left: 30px;
     width: 90%;
     height: 250px;
-    background-color: #A27B5C;
+    background-color: #DCD7C9;
     margin-top: 30px;
     border-radius: 20px;
+}
+
+main article .potess .post .userbar {
+    display: flex;
+}
+
+main article .potess .post .userbar ul {
+    list-style-type: none;
+
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    height: 40px;
+    margin: auto;
+    padding-top: 10px;
+    border-bottom: #3F4F44 solid 1px;
+}
+main article .potess .post .userbar ul .imageandname {
+    display: flex;
+    width: 20%;
+    
+    
+}
+
+main article .potess .post .userbar ul .imageandname li {
+    margin-right: 10px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+}
+
+main article .potess .post .content {
+    width: 95%;
+    height: 50%;
+    margin: auto;
+    border-bottom: #3F4F44 solid 1px;
+
+}
+
+main article .potess .post .content h3 {
+    display: flex;
+    font-size: 20px ;
+}
+
+main article .potess .post .content p {
+    font-size: 16px;
+}
+
+main article .potess .post .catigoryandcomment {
+    display: flex;
+    width: 90%;
+    margin: auto;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main article .potess .post .catigoryandcomment .comment span {
+    color: red;
+}
+main article .potess .post .catigoryandcomment .comment button{
+    background-color: #DCD7C9;
+    border-radius: 8px;
 }
