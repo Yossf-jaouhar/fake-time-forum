@@ -12,7 +12,8 @@ body {
 header {
     background-color: #005F20;
 }
-header .contentofthebar{
+
+header .contentofthebar {
     display: flex;
     justify-content: space-between;
     width: 75%;
@@ -23,19 +24,19 @@ header .contentofthebar{
 }
 
 header .title {
- 
-   font-size: 40px;
- 
+
+    font-size: 40px;
+
 }
 
-header .title a{
+header .title a {
     text-decoration: none;
     color: #1D1616;
     font-weight: bold;
     font-family: Knewave;
     letter-spacing: 3px;
-    
-    
+
+
 }
 
 header .contentofthebar .rightbar {
@@ -43,9 +44,9 @@ header .contentofthebar .rightbar {
 }
 
 header .contentofthebar .rightbar .forhone {
-    height:50px;
+    height: 50px;
     width: 50px;
- 
+
 
     margin-right: 10px;
 }
@@ -60,7 +61,7 @@ header .contentofthebar .rightbar .forhone a {
 
 header .contentofthebar .rightbar .forhone a i {
     margin-left: 10px;
-    
+
 }
 
 header .contentofthebar .rightbar .forbuttons {
@@ -71,7 +72,7 @@ header .contentofthebar .rightbar .forbuttons {
 }
 
 
-header .contentofthebar .rightbar .forbuttons  .login  {
+header .contentofthebar .rightbar .forbuttons .login {
     background-color: var(--btn2);
     color: aliceblue;
     width: 120px;
@@ -81,7 +82,8 @@ header .contentofthebar .rightbar .forbuttons  .login  {
     font-family: sans-serif;
     letter-spacing: 1px;
 }
-header .contentofthebar .rightbar .forbuttons  .register {
+
+header .contentofthebar .rightbar .forbuttons .register {
     background-color: var(--btn2);
     color: aliceblue;
     width: 120px;
@@ -91,6 +93,7 @@ header .contentofthebar .rightbar .forbuttons  .register {
     font-family: sans-serif;
     letter-spacing: 1px;
 }
+
 main {
     width: 75%;
     margin: auto;
@@ -98,14 +101,16 @@ main {
 
     display: flex;
 }
+
 main section {
     background-color: #8888882c;
     width: 20%;
     height: 100%;
     border-radius: 30px;
-  
+
 
 }
+
 main section .ppp {
     display: flex;
     justify-content: center;
@@ -120,43 +125,43 @@ main section .ppp {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
     font-weight: bold;
-    
+
 
 }
 
-main section .ppp  i {
+main section .ppp i {
     margin-right: 10px;
 }
 
-main section  .mesgfrom {
+main section .mesgfrom {
     width: 90%;
     margin: auto;
-    overflow: auto; 
+    overflow: auto;
     height: 80vh;
 }
 
 
 
-main section  .mesgfrom::-webkit-scrollbar {
-    width: 8px; 
+main section .mesgfrom::-webkit-scrollbar {
+    width: 8px;
 }
 
 
-main section  .mesgfrom::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    border-radius: 10px; 
+main section .mesgfrom::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
 }
 
-main section  .mesgfrom::-webkit-scrollbar-thumb {
-    background: #888; 
-    border-radius: 10px; 
+main section .mesgfrom::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
 }
 
-main section  .mesgfrom::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-}   
+main section .mesgfrom::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 
-main section  .mesgfrom  button {
+main section .mesgfrom button {
     width: 90%;
     height: 40px;
     background-color: bisque;
@@ -169,27 +174,28 @@ main section  .mesgfrom  button {
     font-weight: bold;
 }
 
-main section  .mesgfrom i {
+main section .mesgfrom i {
     margin-right: 10px;
 }
 
 main section .mesg {
     position: absolute;
-    
+
     height: 300px;
     width: 600px;
     background-color: white;
     border-radius: 10px;
-   
+
     margin-left: 600px;
-    
+
 }
+
 main article {
     width: 60%;
     height: 100%;
-    
+
     padding-left: 40px;
-    
+
 }
 
 
@@ -203,35 +209,35 @@ main article .Add_Post {
     font-weight: bold;
     color: aliceblue;
     margin-top: 20px;
-    
-    
+
+
 }
 
 
 main article .potess {
     margin-top: 20px;
-    overflow: auto; 
+    overflow: auto;
     height: 80vh;
 }
 
 
 main article .potess::-webkit-scrollbar {
-    width: 8px; 
+    width: 8px;
 }
 
 main article .potess::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    border-radius: 10px; 
+    background: #f1f1f1;
+    border-radius: 10px;
 }
 
 main article .potess::-webkit-scrollbar-thumb {
-    background: #888; 
-    border-radius: 10px; 
+    background: #888;
+    border-radius: 10px;
 }
 
 main article .potess::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-}    
+    background: #555;
+}
 
 main article .potess .post {
     box-shadow: 5px 5px 10px black;
@@ -258,11 +264,12 @@ main article .potess .post .userbar ul {
     padding-top: 10px;
     border-bottom: #3F4F44 solid 1px;
 }
+
 main article .potess .post .userbar ul .imageandname {
     display: flex;
     width: 20%;
-    
-    
+
+
 }
 
 main article .potess .post .userbar ul .imageandname li {
@@ -282,7 +289,7 @@ main article .potess .post .content {
 
 main article .potess .post .content h3 {
     display: flex;
-    font-size: 20px ;
+    font-size: 20px;
 }
 
 main article .potess .post .content p {
@@ -300,7 +307,8 @@ main article .potess .post .catigoryandcomment {
 main article .potess .post .catigoryandcomment .comment span {
     color: red;
 }
-main article .potess .post .catigoryandcomment .comment button{
+
+main article .potess .post .catigoryandcomment .comment button {
     background-color: #DCD7C9;
     border-radius: 8px;
 }
