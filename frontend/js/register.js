@@ -128,7 +128,7 @@ function setupRegisterEvent() {
             const gender = document.getElementById("gender").value;
             const nickname = document.getElementById("nickname").value.trim();
 
-            // Validate inputs
+            // username.trim() 
             if (!username || username.length < 3) {
                 alert("Username must be at least 3 characters long.");
                 return;

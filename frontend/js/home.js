@@ -15,7 +15,7 @@ const creatpost = `
     color: white;
     text-align: center;
     font-size: 20px;
-
+     overflow: auto;
     border-radius: 10px;
 }
 
@@ -89,14 +89,44 @@ const creatpost = `
 </style>
 <div id="creatpost" class="creatpost">
     <input id="titleID" type="text" placeholder="your title..." maxlength="50">
+    <p id="errortitle" style="color: red; display: none;   font-size: 15px;"></p>
     <textarea id="contentID" maxlength="200" placeholder="your content..."></textarea>
-    <button type="submit">ADD</button>
+    <p id="errorcontent" style="color: red; display: none;   font-size: 15px;"></p>
+    <button id="buttonAddPost" type="submit">ADD</button>
 </div>
 `
 function statement() {
     console.log("hi")
     const addpost = document.getElementById("AddPost")
-    addpost.addEventListener("click", function () {
+    addpost.addEventListener("click",  function () {
         addpost.outerHTML = creatpost
+        creat()
     })
+}
+
+function creat() {
+    const creat = document.getElementById("buttonAddPost")
+    if (creat) {
+        creat.addEventListener("click", async function(){
+            const title = document.getElementById("titleID")
+            const errortitle = document.getElementById("errortitle")
+            const errorcontent = document.getElementById("errorcontent")
+            const content = document.getElementById("contentID")
+            const titlevalue = title.value.trim()
+            const contentvalue = content.value.trim()
+            if (titlevalue.length > 5) {
+                title.style.borderColor = "red";
+                errortitle.style.display = "block";
+
+                errortitle.textContent = "your title it most have 50 char"
+                return 
+            }
+            if (contentvalue.length > 2) {
+                content.style.border = "red"
+                errorcontent.style.display = "block"
+                errorcontent.textContent = "your content it most have 200 char"
+                return
+            }
+        })
+    }
 }
