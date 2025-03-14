@@ -6,7 +6,10 @@ password TEXT NOT NULL,
 fisrtName  TEXT NOT NULL,
 lastName  TEXT NOT NULL ,
 gender TEXT NOT NULL,
-nickname TEXT NOT NULL
+nickname TEXT NOT NULL,
+datecreation DATE NOT NULL,
+Session TEXT,
+Expired DATE 
 );
 CREATE TABLE IF NOT EXISTS Posts (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
