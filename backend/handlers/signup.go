@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"forum/backend/errors"
+
+	"github.com/gofrs/uuid/v5"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -81,15 +84,26 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// Insert the new user into the database
-	_, err = db.Exec("INSERT INTO users (age, email, password, fisrtName, lastName, gender, nickname) VALUES (?, ?,?, ?, ?, ?, ?)",
+	res, err := db.Exec("INSERT INTO users (age, email, password, fisrtName, lastName, gender, nickname) VALUES (?, ?,?, ?, ?, ?, ?)",
 		data.Age, data.Email, hashedPassword, data.FirstName, data.LastName, data.Gender, data.Nickname)
 	if err != nil {
 		errors.SendError("Error saving user to database", http.StatusInternalServerError, w)
 		return
 	}
 
-	fmt.Println("goooood")
-	// Send a success response with JSON
+	id, _ := res.LastInsertId()
+
+	token, err := GenerateToken(int(id), db)
+	if err != nil {
+		fmt.Println("erooor")
+		return
+	}
+
+	cookie := &http.Cookie{Name: "Token", Value: token, MaxAge: 3600, HttpOnly: true}
+
+	http.SetCookie(w, cookie)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -97,4 +111,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		"message": "User registered successfully",
 	})
 
+}
+
+func GenerateToken(id int, db *sql.DB) (string, error) {
+	u2, err := uuid.NewV6()
+	if err != nil {
+		return "", err
+	}
+	token := u2.String()
+	expirationTime := time.Now().UTC().Add(time.Hour)
+
+	_, err = db.Exec("UPDATE users SET Session = ?, Expired = ? WHERE ID = ?", token, expirationTime, id)
+	if err != nil {
+		return "", err
+	}
+	return token , nil
 }
