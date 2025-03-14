@@ -7,7 +7,7 @@ fisrtName  TEXT NOT NULL,
 lastName  TEXT NOT NULL ,
 gender TEXT NOT NULL,
 nickname TEXT NOT NULL,
-datecreation DATE NOT NULL,
+datecreation DATE,
 Session TEXT,
 Expired DATE 
 );

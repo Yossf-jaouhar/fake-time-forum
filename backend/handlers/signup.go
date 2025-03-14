@@ -87,11 +87,16 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	res, err := db.Exec("INSERT INTO users (age, email, password, fisrtName, lastName, gender, nickname) VALUES (?, ?,?, ?, ?, ?, ?)",
 		data.Age, data.Email, hashedPassword, data.FirstName, data.LastName, data.Gender, data.Nickname)
 	if err != nil {
+		fmt.Println("hi error" , err)
 		errors.SendError("Error saving user to database", http.StatusInternalServerError, w)
+	
 		return
 	}
 
-	id, _ := res.LastInsertId()
+	id, err := res.LastInsertId()
+	if err != nil {
+		fmt.Println("hi error")
+	}
 
 	token, err := GenerateToken(int(id), db)
 	if err != nil {
@@ -102,7 +107,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	cookie := &http.Cookie{Name: "Token", Value: token, MaxAge: 3600, HttpOnly: true}
 
 	http.SetCookie(w, cookie)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
