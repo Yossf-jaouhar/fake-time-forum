@@ -1,13 +1,13 @@
-import { registerfunc } from './register.js';
+// import { registerfunc } from './register.js';
 
 
-const success = localStorage.getItem("success");
+// const success = localStorage.getItem("success");
 
-if (!success === "true") {
-    localStorage.removeItem("success");
-} else {
-    registerfunc();
-}
+// if (success === "true") {
+//     localStorage.removeItem("success");
+// } else {
+//     registerfunc();
+// }
 
 
 // document.addEventListener("DOMContentLoaded", function () {
