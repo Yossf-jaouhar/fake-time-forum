@@ -182,6 +182,7 @@ function setupRegisterEvent() {
 
                 const data = await response.json();
                 if (data.success) {
+                    localStorage.setItem("success", data.success);
                     window.location.href = "http://localhost:8080/";
                     return
                 } else {

@@ -1,7 +1,18 @@
+import { registerfunc } from './register.js';
 
-document.addEventListener("DOMContentLoaded", function () {
-    statement()
-})
+
+const success = localStorage.getItem("success");
+
+if (!success === "true") {
+    localStorage.removeItem("success");
+} else {
+    registerfunc();
+}
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     statement()
+// })
 
 const creatpost = `
 <style>
