@@ -1,18 +1,18 @@
-// import { registerfunc } from './register.js';
+import { registerfunc } from './register.js';
 
 
-// const success = localStorage.getItem("success");
+const success = localStorage.getItem("success");
 
-// if (success === "true") {
-//     localStorage.removeItem("success");
-// } else {
-//     registerfunc();
-// }
+if (success === "true") {
+    localStorage.removeItem("success");
+} else {
+    registerfunc();
+}
 
 
-// document.addEventListener("DOMContentLoaded", function () {
-//     statement()
-// })
+document.addEventListener("DOMContentLoaded", function () {
+    statement()
+})
 
 const creatpost = `
 <style>
@@ -108,10 +108,12 @@ const creatpost = `
 `
 function statement() {
     const addpost = document.getElementById("AddPost")
-    addpost.addEventListener("click",  function () {
-        addpost.outerHTML = creatpost
-        creat()
-    })
+    if (addpost) {
+        addpost.addEventListener("click",  function () {
+            addpost.outerHTML = creatpost
+            creat()
+        })
+    }
 }
 
 function creat() {
