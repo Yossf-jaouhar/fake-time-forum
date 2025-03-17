@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"forum/backend/errors"
+	"forum/backend/response"
 
 	"github.com/gorilla/websocket"
 )
@@ -29,7 +29,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 			continue
 		}
 		if err := Clients.SendMsg(msg, db); err != "" {
-			errors.SendError(err, http.StatusBadRequest, w)
+			response.Respond(err, http.StatusBadRequest, w)
 		}
 	}
 }

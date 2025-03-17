@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"database/sql"
-	"forum/backend/errors"
+	"forum/backend/response"
 	"net/http"
 )
 
@@ -18,9 +18,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	sessionCookie, err := r.Cookie("session_id")
 	if err != nil {
 		if err == http.ErrNoCookie {
-			errors.SendError( "No session found", http.StatusUnauthorized,w)
+			response.Respond( "No session found", http.StatusUnauthorized,w)
 		} else {
-			errors.SendError( "Error reading cookie", http.StatusBadRequest,w)
+			response.Respond( "Error reading cookie", http.StatusBadRequest,w)
 		}
 		return
 	}
@@ -28,7 +28,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Delete the session from the database
 	err = deleteSession(sessionCookie.Value, db)
 	if err != nil {
-		errors.SendError( "Error logging out", http.StatusInternalServerError,w)
+		response.Respond( "Error logging out", http.StatusInternalServerError,w)
 		return
 	}
 
