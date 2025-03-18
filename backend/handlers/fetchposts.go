@@ -21,15 +21,13 @@ type Post struct {
 
 func fetchPosts(page int, db *sql.DB) ([]Post, error) {
 	var posts []Post
-
 	// Calculate the offset based on the page number (10 posts per page)
 	offset := (page - 1) * 10
-
 	// Query to fetch posts with pagination, publisher (user) details, and categories
 	rows, err := db.Query(`
 		SELECT 
 			p.ID, p.Title, p.Content, p.DateCreation, p.ID_User, 
-			u.FirstName, u.LastName, u.Email
+			u.nickname
 		FROM 
 			Posts p
 		JOIN 
@@ -114,8 +112,12 @@ func fetchCategoriesForPost(postID int, db *sql.DB) ([]string, error) {
 
 // Handler for fetching posts
 func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	if r.Method != http.MethodGet {
+		response.Respond("method not allowed", 405, w)
+		return
+	}
 	// Parse page query parameter (default to 1 if not provided)
-	page := 1 
+	page := 1
 	pageParam := r.URL.Query().Get("page")
 	if pageParam != "" {
 		_, err := fmt.Sscanf(pageParam, "%d", &page)
@@ -133,7 +135,6 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// Respond with the posts in JSON format
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(posts); err != nil {
 		response.Respond("Error encoding posts", http.StatusInternalServerError, w)
 		return

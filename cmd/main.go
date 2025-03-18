@@ -16,9 +16,9 @@ func main() {
 	db := database.CreateTables()
 	clients := chat.NewClients(db)
 	http.HandleFunc("/static", handlers.ServerStatic)
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
+	http.HandleFunc("/sign-in", func(w http.ResponseWriter, r *http.Request) { handlers.SignInHandler(w, r, db) })
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) { handlers.LogoutHandler(w, r, db) })
-	http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) { handlers.RegisterHandler(w, r, db) })
+	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) { handlers.RegisterHandler(w, r, db) })
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		handlers.Home(w, r, db)
 	})

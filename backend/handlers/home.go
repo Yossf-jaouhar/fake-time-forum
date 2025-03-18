@@ -11,5 +11,6 @@ func Home(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		response.Respond("method not allowed", 405, w)
 		return
 	}
+
 	http.ServeFile(w, r, "./static/index.html")
 }

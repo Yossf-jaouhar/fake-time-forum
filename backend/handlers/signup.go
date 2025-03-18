@@ -55,10 +55,6 @@ func checkIfEmailOrNicknameExists(email, nickname string, db *sql.DB) (bool, boo
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Parse the incoming JSON data
-	if r.Method!=http.MethodPost {
-		response.Respond("method not allowed",405,w)
-		return
-	}
 	var data datafromregister
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
@@ -89,7 +85,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		data.Age, data.Email, hashedPassword, data.FirstName, data.LastName, data.Gender, data.Nickname)
 	if err != nil {
 		response.Respond("Error saving user to database", http.StatusInternalServerError, w)
-
 		return
 	}
 

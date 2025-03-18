@@ -51,6 +51,13 @@ CREATE TABLE IF NOT EXISTS chat(
 
 
 );
-INSERT OR IGNORE INTO Category (Name_Category) VALUES ('suffring');
-INSERT OR IGNORE INTO Category (Name_Category) VALUES ('pain');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Technology');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Lifestyle');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Gaming');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Sports');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Music');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Movies');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Food');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Travel');
+INSERT OR IGNORE INTO Category (Name_Category) VALUES ('Other');
 

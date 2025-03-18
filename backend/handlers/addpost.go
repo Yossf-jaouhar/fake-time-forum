@@ -13,12 +13,13 @@ import (
 type post struct {
 	Title      string   `json:"title"`
 	Content    string   `json:"content"`
-	Categories []string `json:categories`
+	Categories []string `json:"categories"`
 }
 
 // AddPost handles the creation of a new post by a user.
 func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method != http.MethodPost {
+		response.Respond("method not allowed", 405, w)
 		return
 	}
 

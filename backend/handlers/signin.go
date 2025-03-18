@@ -13,7 +13,7 @@ import (
 func getUserBylogin(login string, db *sql.DB) (*User, error) {
 	var user User
 	// Check if the provided value is an email or nickname and query accordingly
-	row := db.QueryRow("SELECT id, age, email, password, firstName, lastName, nickname,gender FROM users WHERE email = ? OR username = ?", login, login)
+	row := db.QueryRow("SELECT id, age, email, password, fisrtName, lastName, nickname,gender FROM users WHERE email = ? OR nickname = ?", login, login)
 
 	err := row.Scan(&user.Id, &user.Age, &user.Email, &user.Password, &user.FirstName, &user.LastName, &user.Nickname, &user.Gender)
 	if err != nil {
@@ -33,7 +33,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 	var loginDetails struct {
-		Login    string `json:"username"`
+		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
 
@@ -42,7 +42,6 @@ func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		response.Respond("Invalid JSON format", http.StatusBadRequest, w)
 		return
 	}
-
 	// Get the user by email or nickname
 	user, err := getUserBylogin(loginDetails.Login, db)
 	if err != nil {
