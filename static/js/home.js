@@ -161,9 +161,8 @@ class App {
 
         try {
             const response = await auth.register(formData);
-            console.log('Registration response:', response);
-            if (response === "register succesfull") {
-                this.showMainApp();
+            if (response === "register succesfull") {                
+            await    this.showMainApp();
             }
         } catch (error) {
             alert('Registration failed: ' + error.message);

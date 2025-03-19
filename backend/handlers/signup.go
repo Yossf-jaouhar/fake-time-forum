@@ -81,30 +81,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// Insert the new user into the database
-	res, err := db.Exec("INSERT INTO users (age, email, password, fisrtName, lastName, gender, nickname) VALUES (?, ?,?, ?, ?, ?, ?)",
+	_, err = db.Exec("INSERT INTO users (age, email, password, fisrtName, lastName, gender, nickname) VALUES (?, ?,?, ?, ?, ?, ?)",
 		data.Age, data.Email, hashedPassword, data.FirstName, data.LastName, data.Gender, data.Nickname)
 	if err != nil {
 		response.Respond("Error saving user to database", http.StatusInternalServerError, w)
 		return
 	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		response.Respond("internal server erro", 500, w)
-		return
-	}
-
-	token, err := GenerateToken(int(id), db)
-	if err != nil {
-		response.Respond("internal server error", 500, w)
-		return
-	}
-
-	cookie := &http.Cookie{Name: "Token", Value: token, MaxAge: 3600, HttpOnly: true, SameSite: http.SameSiteStrictMode}
-
-	http.SetCookie(w, cookie)
 	response.Respond("register succesfull", 200, w)
-
 }
 
 func GenerateToken(id int, db *sql.DB) (string, error) {
