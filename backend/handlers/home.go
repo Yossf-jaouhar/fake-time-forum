@@ -12,5 +12,5 @@ func Home(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	http.ServeFile(w, r, "./static/index.html")
+	http.ServeFile(w, r, "./static/ui/template.html")
 }
