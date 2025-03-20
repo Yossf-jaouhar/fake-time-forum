@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -14,67 +13,52 @@ type Post struct {
 	Title        string   `json:"title"`
 	Content      string   `json:"content"`
 	DateCreation string   `json:"date_creation"`
-	UserID       int      `json:"user_id"`
-	Publisher    User     `json:"publisher"`
+	Publisher    string   `json:"publisher"`
 	Categories   []string `json:"categories"`
 }
 
-func fetchPosts(page int, db *sql.DB) ([]Post, error) {
+func fetchPosts(start int, db *sql.DB) ([]Post, error) {
 	var posts []Post
-	// Calculate the offset based on the page number (10 posts per page)
-	offset := (page - 1) * 10
-	// Query to fetch posts with pagination, publisher (user) details, and categories
-	rows, err := db.Query(`
+	// Calculate the offset based on the start number (10 posts per start)	// Query to fetch posts with pagination, publisher (user) details, and categories
+	query := `
 		SELECT 
-			p.ID, p.Title, p.Content, p.DateCreation, p.ID_User, 
+			p.ID, p.Title, p.Content, p.DateCreation, 
 			u.nickname
 		FROM 
 			Posts p
 		JOIN 
 			users u ON p.ID_User = u.ID
 		ORDER BY 
-			p.DateCreation DESC 
-		LIMIT 10 OFFSET ?`, offset)
+			p.DateCreation DESC `
+	if start > 0 {
+		query += fmt.Sprintf(" where p.ID < %d", start)
+	}
+	query += " LIMIT 10"
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
 	// Iterate over the rows to fetch the posts
 	for rows.Next() {
 		var post Post
-		var firstName, lastName, email string
-
 		// Scan the post data along with publisher details
-		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.DateCreation, &post.UserID, &firstName, &lastName, &email); err != nil {
+		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.DateCreation, &post.Publisher); err != nil {
 			return nil, err
 		}
-
-		// Populate the publisher information
-		post.Publisher = User{
-			Id:        post.UserID,
-			FirstName: firstName,
-			LastName:  lastName,
-			Email:     email,
-		}
-
 		// Now fetch the categories for the current post
 		categories, err := fetchCategoriesForPost(post.ID, db)
 		if err != nil {
 			return nil, err
 		}
-
 		post.Categories = categories
-
 		// Append the post to the posts slice
 		posts = append(posts, post)
 	}
-
 	// Check for errors during iteration
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
 	return posts, nil
 }
 
@@ -116,27 +100,24 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		response.Respond("method not allowed", 405, w)
 		return
 	}
-	// Parse page query parameter (default to 1 if not provided)
-	page := 1
-	pageParam := r.URL.Query().Get("page")
-	if pageParam != "" {
-		_, err := fmt.Sscanf(pageParam, "%d", &page)
-		if err != nil || page < 1 {
-			response.Respond("invalde page", http.StatusBadRequest, w)
+	// Parse start query parameter (default to 1 if not provided)
+	start := 0
+	lastPost := r.URL.Query().Get("lastPost")
+	if lastPost != "" {
+		_, err := fmt.Sscanf(lastPost, "%d", &start)
+		if err != nil || start < 1 {
+			response.Respond("invalde query", http.StatusBadRequest, w)
 			return
 		}
 	}
 
-	// Fetch posts for the given page
-	posts, err := fetchPosts(page, db)
+	// Fetch posts for the given start
+	posts, err := fetchPosts(start, db)
 	if err != nil {
 		response.Respond("Error fetching posts", http.StatusInternalServerError, w)
 		return
 	}
 
 	// Respond with the posts in JSON format
-	if err := json.NewEncoder(w).Encode(posts); err != nil {
-		response.Respond("Error encoding posts", http.StatusInternalServerError, w)
-		return
-	}
+	response.Respond(posts, http.StatusOK, w)
 }

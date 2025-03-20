@@ -2,6 +2,7 @@ package chat
 
 import (
 	"database/sql"
+	"fmt"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -13,7 +14,7 @@ type (
 		sync.RWMutex
 	}
 	Client struct {
-		Conn []*websocket.Conn
+		Conn map[*websocket.Conn]any
 	}
 	Message struct {
 		Content  string `json:"content"`
@@ -24,39 +25,95 @@ type (
 )
 
 func NewClients(db *sql.DB) *Clients {
-	c := &Clients{
+	return &Clients{
 		Map: make(map[string]*Client),
 	}
-	res, _ := db.Query(`SELECT nickname FROM users`)
-	for res.Next() {
-		u := ""
-		res.Scan(&u)
-		c.Map[u] = &Client{
-			Conn: []*websocket.Conn{},
-		}
-	}
-	return c
 }
-
-func (c *Clients) SendMsg(msg *Message, db *sql.DB) string {
-	if c.Map[msg.Reciever] == nil || c.Map[msg.Sender] == nil {
-		return "user doesnt exists"
-	}
-	for _, conn := range c.Map[msg.Reciever].Conn {
-		conn.WriteJSON(msg)
-	}
-	r_id, s_id := 0, 0
-	db.QueryRow(`SELECT id FROM users WHERE nickname = ?`, msg.Sender).Scan(s_id)
-	db.QueryRow(`SELECT id FROM users WHERE nickname = ?`, msg.Reciever).Scan(r_id)
-	if r_id == 0 || s_id == 0 {
-		return "user doesnt exists"
-	}
-	db.Exec(`INSERT INTO chat (sender,receiver,content) VALUE (?,?,?)`, s_id, r_id, msg.Content)
-	return ""
-}
-
-func (c *Clients) RemoveClient(clientID string) {
+func (c *Clients) Singal(nickname string, signal string) {
 	c.Lock()
 	defer c.Unlock()
-	delete(c.Map, clientID)
+	for user, client := range c.Map {
+		if user == nickname {
+			continue
+		}
+		for conn := range client.Conn {
+			conn.WriteJSON(map[string]string{
+				"type":     "signal",
+				"signal":   signal,
+				"nickname": nickname,
+			})
+		}
+	}
+}
+func (c *Clients) GetClients(user string, db *sql.DB) []struct {
+	Client string `json:"client"`
+	State  string `json:"state"`
+} {
+	c.Lock()
+	defer c.Unlock()
+	res, err := db.Query(`SELECT nickname
+	FROM users
+	WHERE nickname != ?
+	ORDER BY 
+		(SELECT MAX(SentAt) 
+		 FROM chat 
+		 WHERE (sender = ? AND receiver = users.nickname) 
+			OR (sender = users.nickname AND receiver = ?)) DESC,
+		nickname ASC;
+	`, user, user, user)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer res.Close()
+	var clients []struct {
+		Client string `json:"client"`
+		State  string `json:"state"`
+	}
+	for res.Next() {
+		var client string 
+		res.Scan(&client)
+		if c.Map[client] != nil && len(c.Map[client].Conn) > 0 {
+			clients = append(clients, struct {
+				Client string `json:"client"`
+				State  string `json:"state"`
+			}{client, "ONLINE"})
+		} else {
+			clients = append(clients, struct {
+				Client string `json:"client"`
+				State  string `json:"state"`
+			}{client, "OFFLINE"})
+		}
+	}
+	return clients
+}
+func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message {
+	c.Lock()
+	defer c.Unlock()
+	res, _ := db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10 WHERE id > ?`, user1, user2, user2, user1, start)
+	if start == 0 {
+		res, _ = db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10`, user1, user2, user2, user1)
+	}
+	var messages []Message
+	for res.Next() {
+		var msg Message
+		res.Scan(&msg.Content, &msg.Sender, &msg.SentAt)
+		messages = append(messages, msg)
+	}
+	return messages
+}
+func (c *Clients) SendMsg(msg *Message, db *sql.DB) string {
+	c.Lock()
+	for conn := range c.Map[msg.Reciever].Conn {
+		conn.WriteJSON(msg)
+	}
+	c.Unlock()
+	_, err := db.Exec(`INSERT INTO chat (sender,receiver,content) VALUE (?,?,?)`, msg.Sender, msg.Reciever, msg.Content)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "user doesnt exists"
+		}
+		return "internal server error"
+	}
+	return ""
 }
