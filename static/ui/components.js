@@ -65,28 +65,26 @@ let comment = (comment)=> `<div class="comment">
         <p>${comment.content}</p>
     </div>
                 </div>`
-let post = (post)=>`<div class="forum-post">
+let post = (post)=>document.createRange().createContextualFragment(`<div class="forum-post">
                             <div class="post-header">
                                 <div class="post-author">
                                     <div class="post-avatar">JD</div>
-                                    <div class="post-name">${post.author}</div>
+                                    <div class="post-name">${post.publisher}</div>
                                 </div>
-                                <div class="post-date">${post.date}</div>
+                                <div class="post-date">${post.date_creation}</div>
                             </div>
                             <div class="post-content">
                                 <p>${post.content}</p>
                             </div>
                             <div class="post-categories">
-                            ${post.categories.forEach(cat => {
-                                let diva = document.createElement("div")
-                                diva.classList.add("post-action")
-                                diva.textContent = cat
-                            })}
+                            ${post.categories.map(cat => {
+                                return `<div class="post-action">${cat}</div>`
+                            }).join("")}
                             </div>
                             </div>
                             <div class="post-comments">
                             </div>
-                </div>`
+                </div>`).firstElementChild
 let postinput = (categories)=> `<div class="post-form-container">
                     <h2 class="form-title">Create New Post</h2>
                     <form id="postForm">

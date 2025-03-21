@@ -44,7 +44,8 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	idPost, _ := result.LastInsertId()
 	for _, categoryID := range post.Categories {
-		_, err := db.Exec("INSERT INTO PostCategory (ID_Post, ID_Category) VALUES (?, ?)", int(idPost), categoryID)
+		_, err := db.Exec(`INSERT INTO PostCategory (ID_Post, ID_Category)
+		SELECT ?, ID FROM Category WHERE Name_Category = ?;`, int(idPost), categoryID)
 		if err != nil {
 			log.Println(err)
 			continue

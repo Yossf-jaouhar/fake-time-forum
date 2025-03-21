@@ -1,4 +1,5 @@
 export { register, login, is, loadPosts }
+import { post } from "./components.js";
 var id = 0
 async function register(registerData, loginTab, loginForm, registerTab, registerForm) {
     try {
@@ -14,7 +15,6 @@ async function register(registerData, loginTab, loginForm, registerTab, register
         }
         console.log(response.ok)
         if (response.ok) {
-            localStorage.setItem("success", data.success);
             loginTab.classList.add('active');
             registerTab.classList.remove('active');
             loginForm.classList.remove('hidden');
@@ -56,7 +56,9 @@ const is = async () => {
 }
 
 async function loadPosts(){
-    const resp = await fetch(`/fetchpost?page=${id}`);
-    const data = await resp.json(); // Await the JSON parsing
-    console.log(data);
+    const resp = await fetch(`/fetchpost?lastpost=${id}`);
+    const posts = await resp.json();
+    console.log(posts)
+
+    return posts
     }
