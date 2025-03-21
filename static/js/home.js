@@ -321,9 +321,16 @@ class App {
         let input = document.getElementById('message-input')
         socket.onmessage = (event)=>{
             let msg = JSON.parse(event.data)
-            for (const element of msg) {    
-                messages.innerHTML += `<div class="chatuser ${element.state}" id="${element.client}">${element.client}</div>`
+            console.log(msg,"msg");
+            if(msg.type == "signal"){
+               let user = document.getElementById(msg.nickname)
+               user.classList.add(msg.signal.toLowerCase())
+            }else{
+                for (const element of msg) {    
+                messages.innerHTML += `<div class="chatuser ${element.state.toLowerCase()}" id="${element.client}">${element.client}</div>`
             }
+            }
+            
         }
         input.addEventListener('keydown', (event)=>{
             if(event.key == "Enter"){

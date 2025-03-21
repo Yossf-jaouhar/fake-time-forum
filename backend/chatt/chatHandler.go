@@ -31,9 +31,11 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 	}
 	Clients.Map[username].Conn[conn] = nil
 	defer func() {
+		fmt.Println("closing connection")
 		delete(Clients.Map[username].Conn, conn)
-		if client, ok := Clients.Map[username]; ok || len(client.Conn) == 0 {
+		if client, ok := Clients.Map[username]; ok && len(client.Conn) == 0 {
 			Clients.Singal(username, "OFFLINE")
+			fmt.Println("signal sent")
 		}
 		conn.Close()
 	}()
