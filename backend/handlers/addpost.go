@@ -31,7 +31,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	if post.Title == "" || post.Content == "" || len(post.Categories) == 0 || len([]rune(post.Content)) > 1000 || len([]rune(post.Title)) > 50 {
+	if post.Title == "" || post.Content == "" || /*len(post.Categories) == 0 || */ len([]rune(post.Content)) > 1000 || len([]rune(post.Title)) > 50 {
 		response.Respond("please fill all the required fields", http.StatusBadRequest, w)
 		return
 	}

@@ -1,4 +1,5 @@
-export { register, login, is }
+export { register, login, is, loadPosts }
+var id = 0
 async function register(registerData, loginTab, loginForm, registerTab, registerForm) {
     try {
         const response = await fetch("/signup", {
@@ -53,3 +54,9 @@ const is = async () => {
     }
 
 }
+
+async function loadPosts(){
+    const resp = await fetch(`/fetchpost?page=${id}`);
+    const data = await resp.json(); // Await the JSON parsing
+    console.log(data);
+    }

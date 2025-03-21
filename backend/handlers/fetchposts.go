@@ -21,8 +21,17 @@ type Post struct {
 
 func fetchPosts(page int, db *sql.DB) ([]Post, error) {
 	var posts []Post
+	if page == 0 {
+		rw := db.QueryRow(`SELECT ID FROM Posts ORDER BY ID DESC LIMIT 1;`)
+		err := rw.Scan(&page)
+		fmt.Println(err)
+		if err != nil {
+			return nil, nil
+		}
+		page++
+	}
+	fmt.Println(page)
 	// Calculate the offset based on the page number (10 posts per page)
-	offset := (page - 1) * 10
 	// Query to fetch posts with pagination, publisher (user) details, and categories
 	rows, err := db.Query(`
 		SELECT 
@@ -34,7 +43,8 @@ func fetchPosts(page int, db *sql.DB) ([]Post, error) {
 			users u ON p.ID_User = u.ID
 		ORDER BY 
 			p.DateCreation DESC 
-		LIMIT 10 OFFSET ?`, offset)
+	    WHERE p.ID < ?
+		LIMIT 10`, page)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +91,6 @@ func fetchPosts(page int, db *sql.DB) ([]Post, error) {
 // Fetch categories for a given post
 func fetchCategoriesForPost(postID int, db *sql.DB) ([]string, error) {
 	var categories []string
-
 	// Query to fetch categories associated with a specific post
 	rows, err := db.Query(`
 		SELECT c.Name_Category 
@@ -121,7 +130,7 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	pageParam := r.URL.Query().Get("page")
 	if pageParam != "" {
 		_, err := fmt.Sscanf(pageParam, "%d", &page)
-		if err != nil || page < 1 {
+		if err != nil || page < 0 {
 			response.Respond("invalde page", http.StatusBadRequest, w)
 			return
 		}
@@ -129,6 +138,7 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	// Fetch posts for the given page
 	posts, err := fetchPosts(page, db)
+	fmt.Println(posts)
 	if err != nil {
 		response.Respond("Error fetching posts", http.StatusInternalServerError, w)
 		return

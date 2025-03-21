@@ -169,7 +169,7 @@ class App {
         }
     }
 
-    async showMainApp() {
+    async  showMainApp() {
         // Check authentication before showing main app
         if (!auth.isAuthenticated()) {
             this.showLoginForm();
@@ -326,7 +326,7 @@ class App {
         if (!auth.isAuthenticated()) {
             this.showLoginForm();
             return;
-        }
+        } 
 
         const input = document.getElementById('message-input');
         const message = input.value.trim();
