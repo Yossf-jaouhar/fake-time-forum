@@ -29,7 +29,7 @@ func NewClients(db *sql.DB) *Clients {
 		Map: make(map[string]*Client),
 	}
 }
-func (c *Clients) Singal(nickname string, signal string) {
+func (c *Clients) ActiveSingal(nickname string, active string) {
 	c.Lock()
 	defer c.Unlock()
 	for user, client := range c.Map {
@@ -39,14 +39,14 @@ func (c *Clients) Singal(nickname string, signal string) {
 		for conn := range client.Conn {
 			conn.WriteJSON(map[string]string{
 				"type":     "signal",
-				"signal":   signal,
-				"nickname": nickname,
+				"active":   active,
+				"name": nickname,
 			})
 		}
 	}
 }
 func (c *Clients) GetClients(user string, db *sql.DB) []struct {
-	Client string `json:"client"`
+	Client string `json:"name"`
 	State  string `json:"state"`
 } {
 	c.Lock()
@@ -67,7 +67,7 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 	}
 	defer res.Close()
 	var clients []struct {
-		Client string `json:"client"`
+		Client string `json:"name"`
 		State  string `json:"state"`
 	}
 	for res.Next() {
@@ -75,21 +75,19 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 		res.Scan(&client)
 		if c.Map[client] != nil && len(c.Map[client].Conn) > 0 {
 			clients = append(clients, struct {
-				Client string `json:"client"`
+				Client string `json:"name"`
 				State  string `json:"state"`
-			}{client, "ONLINE"})
+			}{client, "online"})
 		} else {
 			clients = append(clients, struct {
-				Client string `json:"client"`
+				Client string `json:"name"`
 				State  string `json:"state"`
-			}{client, "OFFLINE"})
+			}{client, ""})
 		}
 	}
 	return clients
 }
 func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message {
-	c.Lock()
-	defer c.Unlock()
 	res, _ := db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10 WHERE id > ?`, user1, user2, user2, user1, start)
 	if start == 0 {
 		res, _ = db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10`, user1, user2, user2, user1)

@@ -23,7 +23,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		return
 	}
 	username := r.Context().Value("userName").(string)
-	Clients.Singal(username, "ONLINE")
+	Clients.ActiveSingal(username, "online")
 	if Clients.Map[username] == nil {
 		Clients.Map[username] = &Client{
 			Conn: make(map[*websocket.Conn]any),
@@ -34,7 +34,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		fmt.Println("closing connection")
 		delete(Clients.Map[username].Conn, conn)
 		if client, ok := Clients.Map[username]; ok && len(client.Conn) == 0 {
-			Clients.Singal(username, "OFFLINE")
+			Clients.ActiveSingal(username, "")
 			fmt.Println("signal sent")
 		}
 		conn.Close()
@@ -51,7 +51,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		msg.Sender = username
 		fmt.Println(msg)
 		if err := Clients.SendMsg(msg, db); err != "" {
-			conn.WriteJSON(map[string]any{"err": err, "code": http.StatusBadRequest})
+			conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": http.StatusBadRequest})
 		}
 	}
 }

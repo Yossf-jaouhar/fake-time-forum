@@ -88,6 +88,10 @@ func main() {
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			handlers.GetCommentsHandler(w, r, db)
 		}), db))
+	mux.HandleFunc("/fetchchat", midlware.Authorization(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			chat.FetchChat(w, r,clients, db)
+		}), db))
 	/*
 	   	mux.HandleFunc("/categories", midlware.Authorization(
 	   		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
