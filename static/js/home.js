@@ -178,16 +178,15 @@ class App {
 
         this.container.innerHTML = '';
         this.setupNavigation();
-        
+       
         const mainContent = createElement('div', { className: 'main-content' }, [
             this.createChatSection(),
             this.createPostsSection()
         ]);
         
         this.container.appendChild(mainContent);
-        
-        this.initializeWebSocket();
         this.loadPosts();
+         this.initializeWebSocket()
     }
 
     setupNavigation() {
@@ -316,11 +315,35 @@ class App {
             }, [])
         ]);
     }
-
     initializeWebSocket() {
-        // WebSocket implementation for real-time chat
-        // This would be implemented based on your backend WebSocket setup
+        const socket = new WebSocket("/chat");
+        let messages = document.getElementById('messages')
+        let input = document.getElementById('message-input')
+        socket.onmessage = (event)=>{
+            let msg = JSON.parse(event.data)
+            console.log(msg,"msg");
+            if(msg.type == "signal"){
+               let user = document.getElementById(msg.nickname)
+               user.classList.add(msg.signal.toLowerCase())
+            }else{
+                for (const element of msg) {    
+                messages.innerHTML += `<div class="chatuser ${element.state.toLowerCase()}" id="${element.client}">${element.client}</div>`
+            }
+            }
+            
+        }
+        input.addEventListener('keydown', (event)=>{
+            if(event.key == "Enter"){
+                let message = input.value
+                socket.send(JSON.stringify({
+                    type: "message",
+                    content: message
+                }))
+                input.value = ''
+            }
+        })
     }
+
 
     async sendMessage() {
         if (!auth.isAuthenticated()) {
@@ -465,6 +488,4 @@ class App {
 }
 
 // Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
     new App();
-});

@@ -100,8 +100,6 @@ func main() {
 	server := &http.Server{
 		Addr:         ":8080",
 		Handler:      mux,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
 	}
 
 	// Start server in a goroutine

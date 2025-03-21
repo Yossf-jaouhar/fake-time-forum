@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -19,11 +18,15 @@ type Comment struct {
 }
 
 // Fetch comments for a specific post_id
-func fetchComments(postID int, db *sql.DB) ([]Comment, error) {
+func fetchComments(postID, start int, db *sql.DB) ([]Comment, error) {
 	var comments []Comment
-
+	query := "SELECT id, post_id, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC"
+	if start > 0 {
+		query += fmt.Sprintf(" AND id < %d", start)
+	}
+	query += " LIMIT 10"
 	// Query to fetch comments for the specified post ID
-	rows, err := db.Query("SELECT id, user_id, post_id, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC", postID)
+	rows, err := db.Query(query, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +53,15 @@ func fetchComments(postID int, db *sql.DB) ([]Comment, error) {
 func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// For simplicity, we assume the post_id is provided as a query parameter
 	postID := r.URL.Query().Get("post_id")
+	start := 0
+	startInt := r.URL.Query().Get("start")
+	if startInt != "" {
+		_, err := fmt.Sscanf(startInt, "%d", &start)
+		if err != nil || start < 1 {
+			response.Respond("invalde query", http.StatusBadRequest, w)
+			return
+		}
+	}
 	if postID == "" {
 		response.Respond("post id missing", http.StatusBadRequest, w)
 		return
@@ -64,16 +76,11 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	// Fetch comments for the given post ID
-	comments, err := fetchComments(postIDInt, db)
+	comments, err := fetchComments(postIDInt, start, db)
 	if err != nil {
 		response.Respond("error fetching comments", http.StatusInternalServerError, w)
 		return
 	}
-
 	// Convert the comments to JSON
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(comments); err != nil {
-		response.Respond("error encoding comments", http.StatusInternalServerError, w)
-		return
-	}
+	response.Respond(comments, http.StatusOK, w)
 }
