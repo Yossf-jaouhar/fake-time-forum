@@ -1,4 +1,4 @@
-export { auth, comment, post, postinput, sidebar, navbar }
+export { auth, comment, post, postinput, sidebar, navbar ,userBubble,persoChat}
 let auth = () => `<div class="tabs">
             <div class="tab active" id="login-tab">Login</div>
             <div class="tab" id="register-tab">Register</div>
@@ -134,6 +134,7 @@ let userBubble = (uData, personalChat) => {
         personalChat.id = uData.name
         personalChat.classList.add("shown")
     })
+    return uBuble
 }
 let persoChat = (ws) => {
     let pChat = document.createElement('chat')
@@ -143,17 +144,13 @@ let persoChat = (ws) => {
     input.type = 'text';
     input.placeholder = 'Type a message...';
     input.classList.add('chat-input');
-
     // Create cancel button
     let cancel = document.createElement('button');
     cancel.textContent = 'Close';
     cancel.classList.add('cancel');
-
     // Append everything to the chat container
     pChat.append(cancel, chat, input);
     document.body.appendChild(pChat);
-
-    // Handle closing the chat
     cancel.onclick = () => {
         pChat.classList.remove('shown');
         chat.innerHTML = "";
@@ -166,7 +163,7 @@ let persoChat = (ws) => {
             let data = input.value.trim()
             msg.textContent = data;
             chat.appendChild(msg);
-            chat.scrollTop = chat.scrollHeight; // Auto-scroll to bottom
+            chat.scrollTop = chat.scrollHeight;
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send({
                     type: "message",
@@ -177,6 +174,14 @@ let persoChat = (ws) => {
                 });
             }
             input.value = "";
+        } else if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send({
+                type: "signal",
+                data: {
+                    reciever: pChat.id,
+                    content: "typing"
+                }
+            });
         }
     });
 }
