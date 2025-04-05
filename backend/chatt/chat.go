@@ -17,6 +17,7 @@ type (
 		Conn map[*websocket.Conn]any
 	}
 	Message struct {
+		Type string `json:"type"`
 		Content  string `json:"content"`
 		Reciever string `json:"reciever"`
 		Sender   string `json:"sender"`
@@ -38,7 +39,7 @@ func (c *Clients) ActiveSingal(nickname string, active string) {
 		}
 		for conn := range client.Conn {
 			conn.WriteJSON(map[string]string{
-				"type":     "signal",
+				"type":     "status",
 				"active":   active,
 				"name": nickname,
 			})
@@ -100,18 +101,35 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 	}
 	return messages
 }
-func (c *Clients) SendMsg(msg *Message, db *sql.DB) string {
+
+func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string,int) {
 	c.Lock()
 	for conn := range c.Map[msg.Reciever].Conn {
-		conn.WriteJSON(msg)
+		err:=conn.WriteJSON(map[string]any{"type":msg.Type,"data":msg})
+		if err!= nil {
+			c.Unlock()
+			return "err sending message" ,500
+		}
 	}
 	c.Unlock()
 	_, err := db.Exec(`INSERT INTO chat (sender,receiver,content) VALUE (?,?,?)`, msg.Sender, msg.Reciever, msg.Content)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "user doesnt exists"
+			return "user doesnt exists",404
 		}
-		return "internal server error"
+		return "internal server error" ,500
 	}
+	return "",200
+}
+func (c *Clients)SendSingnals(msg *Message) string {
+	c.Lock()
+	for conn := range c.Map[msg.Reciever].Conn {
+		err:=conn.WriteJSON(map[string]any{"type":msg.Type,"data":msg})
+		if err!= nil {
+			c.Unlock()
+			return "err sending signal"
+		}
+	}
+	c.Unlock()
 	return ""
 }

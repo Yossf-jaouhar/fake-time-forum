@@ -1,5 +1,5 @@
-export{auth, comment, post, postinput, sidebar, navbar}
-let auth = ()=> `<div class="tabs">
+export { auth, comment, post, postinput, sidebar, navbar }
+let auth = () => `<div class="tabs">
             <div class="tab active" id="login-tab">Login</div>
             <div class="tab" id="register-tab">Register</div>
         </div>
@@ -56,7 +56,7 @@ let auth = ()=> `<div class="tabs">
                 <button type="submit">Register</button>
             </form>
                 </div>`
-let comment = (comment)=> `<div class="comment">
+let comment = (comment) => `<div class="comment">
     <div class="comment-header">
         <span class="comment-author">${comment.sender}</span>
         <span class="comment-date">${comment.date}</span>
@@ -65,7 +65,7 @@ let comment = (comment)=> `<div class="comment">
         <p>${comment.content}</p>
     </div>
                 </div>`
-let post = (post)=>`<div class="forum-post">
+let post = (post) => `<div class="forum-post">
                             <div class="post-header">
                                 <div class="post-author">
                                     <div class="post-avatar">JD</div>
@@ -78,16 +78,16 @@ let post = (post)=>`<div class="forum-post">
                             </div>
                             <div class="post-categories">
                             ${post.categories.forEach(cat => {
-                                let diva = document.createElement("div")
-                                diva.classList.add("post-action")
-                                diva.textContent = cat
-                            })}
+    let diva = document.createElement("div")
+    diva.classList.add("post-action")
+    diva.textContent = cat
+})}
                             </div>
                             </div>
                             <div class="post-comments">
                             </div>
                 </div>`
-let postinput = (categories)=> `<div class="post-form-container">
+let postinput = (categories) => `<div class="post-form-container">
                     <h2 class="form-title">Create New Post</h2>
                     <form id="postForm">
                         <div class="form-group">
@@ -125,6 +125,61 @@ let postinput = (categories)=> `<div class="post-form-container">
                         <button type="submit" class="submit-button">Publish Post</button>
                     </form>
                 </div>`
+let userBubble = (uData, personalChat) => {
+    let uBuble = document.createElement('bubble')
+    uBuble.id = uData.name
+    if (uData.active) { uBuble.classList.add(on) }
+    uBuble.textContent = uData.name
+    uBuble.onClick(() => {
+        personalChat.id = uData.name
+        personalChat.classList.add("shown")
+    })
+}
+let persoChat = (ws) => {
+    let pChat = document.createElement('chat')
+    let chat = document.createElement('messages')
+    // Create input field
+    let input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Type a message...';
+    input.classList.add('chat-input');
+
+    // Create cancel button
+    let cancel = document.createElement('button');
+    cancel.textContent = 'Close';
+    cancel.classList.add('cancel');
+
+    // Append everything to the chat container
+    pChat.append(cancel, chat, input);
+    document.body.appendChild(pChat);
+
+    // Handle closing the chat
+    cancel.onclick = () => {
+        pChat.classList.remove('shown');
+        chat.innerHTML = "";
+        input.value = "";
+    };
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && input.value.trim() !== "") {
+            let msg = document.createElement('div');
+            msg.classList.add('message');
+            let data = input.value.trim()
+            msg.textContent = data;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight; // Auto-scroll to bottom
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send({
+                    type: "message",
+                    data: {
+                        reciever: pChat.id,
+                        content: data
+                    }
+                });
+            }
+            input.value = "";
+        }
+    });
+}
 let sidebar = (users) => `<div class="sidebar">
                     <div class="sidebar-header">
                         <h2>Users</h2>
@@ -144,7 +199,7 @@ let sidebar = (users) => `<div class="sidebar">
                         </ul>
                     </div>
                 </div>`
-let navbar = ()=>document.createRange().createContextualFragment(`<div class="navbar">
+let navbar = () => document.createRange().createContextualFragment(`<div class="navbar">
         <div class="logo">Connect</div>
         <div class="nav-links">
             <a href="#">Posts</a>

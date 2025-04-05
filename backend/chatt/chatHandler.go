@@ -40,7 +40,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		conn.Close()
 	}()
 	otherClients := Clients.GetClients(username, db)
-	conn.WriteJSON(otherClients)
+	conn.WriteJSON(map[string]any{"type": "clients", "data": otherClients})
 	for {
 		msg := &Message{}
 		err = conn.ReadJSON(&msg)
@@ -49,9 +49,18 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		}
 		msg.SentAt = time.Now().String()
 		msg.Sender = username
-		fmt.Println(msg)
-		if err := Clients.SendMsg(msg, db); err != "" {
-			conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": http.StatusBadRequest})
+		switch msg.Type {
+		case "message":
+			if err, code := Clients.SendMsg(msg, db); err != "" {
+				conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": code})
+			}
+		case "signal":
+			if err := Clients.SendSingnals(msg); err != "" {
+				conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": 500})
+			}
+		default:
+			conn.WriteJSON(map[string]any{"type": "err", "err": "invalid message type", "code": http.StatusBadRequest})
 		}
+
 	}
 }

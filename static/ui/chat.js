@@ -1,22 +1,31 @@
 import { sidebar } from "./components"
-
-const wschat = ()=>{
+const wschat = () => {
     const socket = new WebSocket("/chat")
-    let users
-    socket.onmessage = (event)=>{
-        let msg = JSON.parse(event.data)
-   if(!msg.type){
-  users = sidebar(msg.clients)
-  document.body.appendChild(users)
-}else{
-if(msg.type == "signal"){
-    let user = document.getElementById(msg.client)
-    user.dataset.state = msg.signal.toLowerCase()
-}else{
-let user = document.getElementById(msg.sender)
-user.remove()
-users.prepend(user)
+    window.addEventListener('lougout', () => {
+        socket.close()
+    })
+
 }
+const HandelSocket = (msg) => {
+    switch (msg.type) {
+        case "status":
+            HandleSts(msg.sender)
+            break;
+        case "message":
+            HandleMsg(msg.data)
+            break
+        default:
+            break;
+    }
 }
+const InitUsers = (users) => {
+    const chat = document.body.querySelector('chat')
+    
 }
+const HandleSts = (sender) => {
+    const target = document.body.querySelector(`#${sender}`)
+    target.classList.toggle("on")
+}
+const HandleMsg = (msg) => {
+
 }
