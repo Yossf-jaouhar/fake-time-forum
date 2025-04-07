@@ -78,7 +78,7 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 			clients = append(clients, struct {
 				Client string `json:"name"`
 				State  string `json:"state"`
-			}{client, "online"})
+			}{client, "on"})
 		} else {
 			clients = append(clients, struct {
 				Client string `json:"name"`
@@ -105,7 +105,7 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string,int) {
 	c.Lock()
 	for conn := range c.Map[msg.Reciever].Conn {
-		err:=conn.WriteJSON(map[string]any{"type":msg.Type,"data":msg})
+		err:=conn.WriteJSON(msg)
 		if err!= nil {
 			c.Unlock()
 			return "err sending message" ,500
@@ -124,7 +124,7 @@ func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string,int) {
 func (c *Clients)SendSingnals(msg *Message) string {
 	c.Lock()
 	for conn := range c.Map[msg.Reciever].Conn {
-		err:=conn.WriteJSON(map[string]any{"type":msg.Type,"data":msg})
+		err:=conn.WriteJSON(msg)
 		if err!= nil {
 			c.Unlock()
 			return "err sending signal"

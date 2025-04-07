@@ -150,7 +150,6 @@ let persoChat = (ws) => {
     cancel.classList.add('cancel');
     // Append everything to the chat container
     pChat.append(cancel, chat, input);
-    document.body.appendChild(pChat);
     cancel.onclick = () => {
         pChat.classList.remove('shown');
         chat.innerHTML = "";
@@ -158,8 +157,8 @@ let persoChat = (ws) => {
     };
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && input.value.trim() !== "") {
-            let msg = document.createElement('div');
-            msg.classList.add('message');
+            let msg = document.createElement('msg');
+            msg.classList.add('messageSent');
             let data = input.value.trim()
             msg.textContent = data;
             chat.appendChild(msg);
@@ -167,23 +166,20 @@ let persoChat = (ws) => {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send({
                     type: "message",
-                    data: {
-                        reciever: pChat.id,
-                        content: data
-                    }
+                    reciever: pChat.id,
+                    content: data
                 });
             }
             input.value = "";
         } else if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send({
                 type: "signal",
-                data: {
-                    reciever: pChat.id,
-                    content: "typing"
-                }
+                reciever: pChat.id,
+                content: "typing"
             });
         }
     });
+    return pChat
 }
 let sidebar = (users) => `<div class="sidebar">
                     <div class="sidebar-header">

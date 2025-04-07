@@ -14,7 +14,6 @@ async function register(registerData, loginTab, loginForm, registerTab, register
         }
         console.log(response.ok)
         if (response.ok) {
-            localStorage.setItem("success", data.success);
             loginTab.classList.add('active');
             registerTab.classList.remove('active');
             loginForm.classList.remove('hidden');
@@ -57,6 +56,6 @@ const is = async () => {
 
 async function loadPosts(){
     const resp = await fetch(`/fetchpost?page=${id}`);
-    const data = await resp.json(); // Await the JSON parsing
+    const data = await resp.json();
     console.log(data);
     }
