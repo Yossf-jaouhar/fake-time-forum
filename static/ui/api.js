@@ -56,6 +56,8 @@ const is = async () => {
 }
 
 async function loadPosts(){
+    console.log(1312);
+    
     const resp = await fetch(`/fetchpost?lastpost=${id}`);
     const posts = await resp.json();
     console.log(posts)

@@ -51,4 +51,5 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			continue
 		}
 	}
+	response.Respond("ok",200,w)
 }
