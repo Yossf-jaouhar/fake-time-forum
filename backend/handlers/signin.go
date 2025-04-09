@@ -45,6 +45,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Get the user by email or nickname
 	user, err := getUserBylogin(loginDetails.Login, db)
 	if err != nil {
+		fmt.Println(err,1)
 		response.Respond("Invalid credentials", http.StatusUnauthorized, w)
 		return
 	}
@@ -52,6 +53,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Compare the provided password with the stored hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginDetails.Password))
 	if err != nil {
+		fmt.Println(err,2)
 		response.Respond("Invalid credentials", http.StatusUnauthorized, w)
 		return
 	}
