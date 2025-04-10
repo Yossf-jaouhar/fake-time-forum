@@ -14,7 +14,4 @@ export let renderMainPage = () => {
     loadPosts(0, posts)
     wschat()
     document.body.append(right)
-    setTimeout(()=>{
-        console.log(document.body.innerHTML);
-    },1000)
 }

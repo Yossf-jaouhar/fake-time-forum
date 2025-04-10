@@ -1,5 +1,6 @@
 export { register, login, is, loadPosts ,loadChat,loadComments}
-import { post ,comment} from "./components.js";
+import { toast } from "./chat.js";
+import { post ,comment, msg} from "./components.js";
 import { renderMainPage } from "./render.js";
 async function register(registerData, loginTab, loginForm, registerTab, registerForm) {
     try {
@@ -32,6 +33,8 @@ async function login(loginData) {
             body: JSON.stringify(loginData)
         });
         if (!response.ok) {
+            console.log(response);
+            toast(response)
             throw new Error(`HTTP Error: ${response.status} `);
         }
         if (response.ok) {
@@ -53,9 +56,9 @@ const is = async () => {
 }
 
 async function loadPosts(id,Posts){        
-    const resp = await fetch(`/fetchpost?start=${id}`);
+    const resp = await fetch(`/fetchpost?start=${id}`).catch(err=>{toast(err)});
     const posts = await resp.json();
-    posts.forEach(pst => {
+    posts?.forEach(pst => {
         Posts.append(post(pst))
     });
     const options = {
@@ -75,14 +78,25 @@ async function loadPosts(id,Posts){
       observer.observe(Posts.lastChild)
 }
 async function loadChat(cid,id,chat){    
-    const resp = await fetch(`/fetchChat?with=${id}&start=${cid}`);
-    const Chat = await resp.json();
-    Chat.forEach(cmt => {
-       chat.append(comment(cmt),0)
+    console.log(`/fetchChat?with=${cid}&start=${id}`);
+    const resp = await fetch(`/fetchChat?with=${cid}&start=${id}`).catch(err=>{toast(err)});    
+    const Chat = await resp.json(); 
+    let init =   chat.scrollHeight
+    console.log(init);
+    
+    Chat?.forEach(mesg => {
+       chat.prepend(msg(mesg,mesg.sender===cid))
     });
+
+    chat.scrollTop= init
+    if (id===0) {
+        console.log("ytrtyui");
+        
+       chat.scrollTop =0 
+    }
     const options = {
-        root: chat,
-        threshold: 0.3,
+        root: document.querySelector('.mesages'),
+        threshold: 1,
       };
     
     const observer = new IntersectionObserver((entries) => {
@@ -98,9 +112,8 @@ async function loadChat(cid,id,chat){
 async function loadComments(pid,id,Comments){    
     const resp = await fetch(`/fetchcomment?start=${id}&p_id=${pid}`);
     const cmts = await resp.json();
-    cmts.forEach(cmt => {
-        console.log(comment(cmt));
-       Comments.append(comment(cmt))
+    cmts?.forEach(cmt => {
+       Comments.append(msg(cmt,true))
     });
     const options = {
         root: Comments,

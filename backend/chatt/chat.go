@@ -22,6 +22,7 @@ type (
 		Reciever string `json:"reciever"`
 		Sender   string `json:"sender"`
 		SentAt   string `json:"sent_at"`
+		Id   int `json:"id"`
 	}
 )
 
@@ -96,23 +97,45 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 	return clients
 }
 func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message {
-	res, _ := db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10 WHERE id > ?`, user1, user2, user2, user1, start)
-	if start == 0 {
-		res, _ = db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10`, user1, user2, user2, user1)
+	var res *sql.Rows
+	var err error
+
+	if start > 0 {
+		res, err = db.Query(`
+		SELECT content, sender, createdAt ,id
+		FROM chat 
+		WHERE ((sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)) 
+		  AND id > ?
+		ORDER BY createdAt 
+		LIMIT 10
+	`, user1, user2, user2, user1, start)
+	} else {
+		res, err = db.Query(`
+		SELECT content, sender, createdAt , id
+		FROM chat 
+		WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) 
+		ORDER BY createdAt 
+		LIMIT 10
+	`, user1, user2, user2, user1)
 	}
+	fmt.Println(err)
+if err!=nil {
+	return nil
+}
 	var messages []Message
 	for res.Next() {
 		var msg Message
-		res.Scan(&msg.Content, &msg.Sender, &msg.SentAt)
+		res.Scan(&msg.Content, &msg.Sender, &msg.SentAt,&msg.Id)
 		messages = append(messages, msg)
 	}
+	fmt.Println(start)
 	return messages
 }
 
 func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string, int) {
-	
-	_, err := db.Exec(`INSERT INTO chat (sender,receiver,content) VALUE (?,?,?)`, msg.Sender, msg.Reciever, msg.Content)
+	_, err := db.Exec(`INSERT INTO chat (sender,receiver,content) VALUES (?,?,?)`, msg.Sender, msg.Reciever, msg.Content)
 	if err != nil {
+		fmt.Println(err)
 		if err == sql.ErrNoRows {
 			return "user doesnt exists", 404
 		}
@@ -120,14 +143,15 @@ func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string, int) {
 	}
 	if c.Map[msg.Reciever] != nil {
 		c.Lock()
-	for conn := range c.Map[msg.Reciever].Conn {
-		err := conn.WriteJSON(msg)
-		if err != nil {
-			c.Unlock()
-			return "err sending message", 500
+		for conn := range c.Map[msg.Reciever].Conn {
+			err := conn.WriteJSON(msg)
+			if err != nil {
+				fmt.Println(err)
+				c.Unlock()
+				return "err sending message", 500
+			}
 		}
-	}
-	c.Unlock()
+		c.Unlock()
 	}
 	return "", 200
 }
@@ -143,8 +167,6 @@ func (c *Clients) SendSingnals(msg *Message) string {
 			return "err sending signal"
 		}
 	}
-	fmt.Println("hiii")
-
 	c.Unlock()
 	return ""
 }

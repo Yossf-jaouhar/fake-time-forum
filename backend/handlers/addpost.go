@@ -15,7 +15,6 @@ type post struct {
 	Content    string   `json:"content"`
 	Categories []string `json:"categories"`
 }
-
 // AddPost handles the creation of a new post by a user.
 func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method != http.MethodPost {
@@ -52,5 +51,5 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			continue
 		}
 	}
-	response.Respond("ur good to go", 200, w)
+	response.Respond("goood", 200, w)
 }

@@ -1,6 +1,7 @@
+import { loadChat } from "./api.js";
 import { initauth } from "./auth.js";
 
-export { auth, comment, post, postinput, header, userBubble, persoChat }
+export { auth, comment, post, postinput, header, userBubble, persoChat, msg }
 let auth = () => `<div class="tabs">
             <div class="tab active" id="login-tab">Login</div>
             <div class="tab" id="register-tab">Register</div>
@@ -94,6 +95,9 @@ function post(postData) {
     post.classList.add('post')
     post.id = postData.id
     post.innerHTML = postHTML
+    post.addEventListener('click', () => {
+        showDetails(postData, id)
+    })
     return post;
 }
 function postinput(categories) {
@@ -144,16 +148,13 @@ function postinput(categories) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Extract form values
         const title = form.querySelector('#post-title').value.trim();
         const content = form.querySelector('#post-content').value.trim();
 
-        // Extract selected categories
         const selectedCategories = Array.from(
             form.querySelectorAll('input[name="categories"]:checked')
         ).map(input => input.value);
 
-        // Prepare JSON body
         const postData = {
             title,
             content,
@@ -170,7 +171,7 @@ function postinput(categories) {
             });
 
             if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
+                throw new Error(`Server error: ${response}`);
             }
 
             const result = await response.json();
@@ -184,42 +185,56 @@ function postinput(categories) {
 }
 let userBubble = (uData, personalChat) => {
     let uBuble = document.createElement('div')
+    const msgs = document.querySelector('.messages')
     uBuble.id = uData.name
     uBuble.dataset.time = uData.time
     uBuble.classList.add("user")
-    if (uData.active) { uBuble.classList.add(on) }
-    uBuble.textContent = uData.name
-    uBuble.onClick(() => {
+let indecator = document.createElement('div')
+indecator.classList.add('typing-indicator')
+indecator.innerHTML =`<span></span><span></span><span></span>`
+    if (uData.state) { uBuble.classList.add('on') }
+    uBuble.innerHTML = `<p>${uData.name}</p>`
+    uBuble.append(indecator)
+    uBuble.addEventListener('click',() => {
+        msgs.innerHTML = ""
         personalChat.id = uData.name
-        personalChat.classList.add("shown")
+        personalChat.classList.add("show")
+        loadChat(uData.name, 0, msgs)
+        
     })
     return uBuble
 }
+let msg = (msg, received) => {
+    let is = 'sent'
+    if (received) {
+        is = 'received'
+    }
+    let mesg = document.createElement('div')
+    mesg.classList.add('message', is)
+    mesg.id =msg.id
+    mesg.innerHTML = `
+<div class="author">
+    <div class="avatar">
+        ${received ? msg.sender.split(" ").map(e => e[0]).join("") : "Y"}
+    </div>
+    <div class="name">
+        ${received ? msg.sender : "You"}
+    </div>
+    <div class="time">
+        ${msg.sent_at}
+    </div>
+</div>
+<div class="content">
+    ${msg.content}
+</div>
+`
+    return mesg
+}
 let persoChat = (ws) => {
     let pChat = document.createElement('div')
-    pChat.classList.add('chatholder','show')
-
+    pChat.classList.add('chatholder')
     let chat = document.createElement('div')
-chat.classList.add('messages')
-let mesg1 =document.createElement('div')
-mesg1.classList.add('sent')
-mesg1.innerHTML = `<div class="author">
-<div class="avatar">y</div>
-    <div class="name">you</div>
-    
-    <div class="time">1s ago</div
-</div>
-<div class="content">hiiiii</div>`
-let mesg2 =document.createElement('div')
-mesg2.classList.add('recieved')
-mesg2.innerHTML = `<div class="author">
-<div class="avatar">my</div>
-    <div class="name">not you</div>
-    
-    <div class="time">1s ago</div>
-</div>
-<div class="content">hiiiii</div>`
-chat.append(mesg1,mesg2)
+    chat.classList.add('messages')
     // Create input field
     let input = document.createElement('input');
     input.type = 'text';
@@ -230,18 +245,17 @@ chat.append(mesg1,mesg2)
     cancel.classList.add('cancel');
     pChat.append(cancel, chat, input);
     cancel.onclick = () => {
-        pChat.classList.remove('shown');
+        pChat.classList.remove('show');
         chat.innerHTML = "";
         input.value = "";
     };
+    let can = true
+
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && input.value.trim() !== "") {
-            let msg = document.createElement('msg');
-            msg.classList.add('messageSent');
             let data = input.value.trim()
-            msg.textContent = data;
-            chat.appendChild(msg);
-            chat.scrollTop = chat.scrollHeight;
+            let mesg = msg({ sent_at: Date.now(), content: data },false)
+            chat.append(mesg);
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: "message",
@@ -250,7 +264,9 @@ chat.append(mesg1,mesg2)
                 }));
             }
             input.value = "";
-        } else if (ws && ws.readyState === WebSocket.OPEN) {
+        } else if (ws && ws.readyState === WebSocket.OPEN &&can) {
+            can =false
+            setTimeout(()=>{can=true},1000)
             ws.send(JSON.stringify({
                 type: "signal",
                 reciever: pChat.id,
@@ -266,7 +282,7 @@ let header = () => {
     logout.innerText = "logout"
     logout.addEventListener('click', () => {
         window.dispatchEvent(new Event('logout'))
-        fetch('/logout',{method:"POST"}).then(() => {
+        fetch('/logout', { method: "POST" }).then(() => {
             initauth()
         }).catch(err => {
             throw err

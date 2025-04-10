@@ -66,10 +66,14 @@ func main() {
 		}
 		handlers.Home(w, r, db)
 	})
-mux.HandleFunc("/fetchComment",midlware.Authorization(
+mux.HandleFunc("/fetchChat",midlware.Authorization(
 	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		chat.FetchChat(w, r,clients,db)
 	}), db))
+	mux.HandleFunc("/fetchComment",midlware.Authorization(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			chat.FetchChat(w, r,clients,db)
+		}), db))
 	// Protected routes with authorization
 	mux.HandleFunc("/chat", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
