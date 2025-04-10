@@ -2,6 +2,7 @@
 import { loadPosts } from './api.js'
 import { wschat } from './chat.js'
 import { header, postinput } from './components.js'
+import { sort } from './sort.js'
 export let renderMainPage = () => {
     document.body.innerHTML = ""
     let posts = document.createElement('div')
@@ -14,4 +15,5 @@ export let renderMainPage = () => {
     loadPosts(0, posts)
     wschat()
     document.body.append(right)
+    sort()
 }

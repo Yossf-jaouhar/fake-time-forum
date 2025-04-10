@@ -189,18 +189,17 @@ let userBubble = (uData, personalChat) => {
     uBuble.id = uData.name
     uBuble.dataset.time = uData.time
     uBuble.classList.add("user")
-let indecator = document.createElement('div')
-indecator.classList.add('typing-indicator')
-indecator.innerHTML =`<span></span><span></span><span></span>`
+    let indecator = document.createElement('div')
+    indecator.classList.add('typing-indicator')
+    indecator.innerHTML = `<span></span><span></span><span></span>`
     if (uData.state) { uBuble.classList.add('on') }
     uBuble.innerHTML = `<p>${uData.name}</p>`
     uBuble.append(indecator)
-    uBuble.addEventListener('click',() => {
+    uBuble.addEventListener('click', () => {
         msgs.innerHTML = ""
         personalChat.id = uData.name
         personalChat.classList.add("show")
         loadChat(uData.name, 0, msgs)
-        
     })
     return uBuble
 }
@@ -211,7 +210,7 @@ let msg = (msg, received) => {
     }
     let mesg = document.createElement('div')
     mesg.classList.add('message', is)
-    mesg.id =msg.id
+    mesg.id = msg.id
     mesg.innerHTML = `
 <div class="author">
     <div class="avatar">
@@ -254,7 +253,7 @@ let persoChat = (ws) => {
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && input.value.trim() !== "") {
             let data = input.value.trim()
-            let mesg = msg({ sent_at: Date.now(), content: data },false)
+            let mesg = msg({ sent_at: Date.now(), content: data }, false)
             chat.append(mesg);
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
@@ -264,9 +263,9 @@ let persoChat = (ws) => {
                 }));
             }
             input.value = "";
-        } else if (ws && ws.readyState === WebSocket.OPEN &&can) {
-            can =false
-            setTimeout(()=>{can=true},1000)
+        } else if (ws && ws.readyState === WebSocket.OPEN && can) {
+            can = false
+            setTimeout(() => { can = true }, 1000)
             ws.send(JSON.stringify({
                 type: "signal",
                 reciever: pChat.id,

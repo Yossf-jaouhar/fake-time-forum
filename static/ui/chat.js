@@ -1,5 +1,6 @@
 import { persoChat, userBubble } from "./components.js"
 import { msg } from "./components.js"
+import { sort } from "./sort.js"
 export const wschat = () => {
     const socket = new WebSocket("/chat")
     let pChat = persoChat(socket)
@@ -89,6 +90,7 @@ const HandleSts = (sender, chat,Chat) => {
     if (!target) {
         target = userBubble(sender,Chat)
         chat.appendChild(target)
+        sort()
     } else {
         target.classList.toggle("on")
     }
