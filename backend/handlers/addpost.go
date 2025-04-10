@@ -26,6 +26,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	ID := r.Context().Value("userId").(int)
 	var post post
 	err := json.NewDecoder(r.Body).Decode(&post)
+
 	if err != nil {
 		response.Respond("only accept json format", http.StatusBadRequest, w)
 		return
@@ -51,5 +52,5 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			continue
 		}
 	}
-	response.Respond("ok",200,w)
+	response.Respond("ur good to go", 200, w)
 }

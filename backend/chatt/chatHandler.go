@@ -3,6 +3,7 @@ package chat
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -23,7 +24,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		return
 	}
 	username := r.Context().Value("userName").(string)
-	Clients.Singal(username, "ONLINE")
+	Clients.ActiveSingal(username, "online")
 	if Clients.Map[username] == nil {
 		Clients.Map[username] = &Client{
 			Conn: make(map[*websocket.Conn]any),
@@ -34,24 +35,42 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		fmt.Println("closing connection")
 		delete(Clients.Map[username].Conn, conn)
 		if client, ok := Clients.Map[username]; ok && len(client.Conn) == 0 {
-			Clients.Singal(username, "OFFLINE")
+			Clients.ActiveSingal(username, "")
 			fmt.Println("signal sent")
 		}
 		conn.Close()
 	}()
 	otherClients := Clients.GetClients(username, db)
-	conn.WriteJSON(otherClients)
+	conn.WriteJSON(map[string]any{"type": "clients", "data": otherClients})
 	for {
 		msg := &Message{}
 		err = conn.ReadJSON(&msg)
 		if err != nil {
-			break
+			errMsg := map[string]string{
+				"type": "err",
+				"err":  "Failed to parse message. Please try again.",
+			}
+			if writeErr := conn.WriteJSON(errMsg); writeErr != nil {
+				log.Printf("failed to notify client: %v", writeErr)
+				break 
+			}
+			continue
 		}
 		msg.SentAt = time.Now().String()
 		msg.Sender = username
-		fmt.Println(msg)
-		if err := Clients.SendMsg(msg, db); err != "" {
-			conn.WriteJSON(map[string]any{"err": err, "code": http.StatusBadRequest})
+		switch msg.Type {
+		case "message":
+			if err, code := Clients.SendMsg(msg, db); err != "" {
+				conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": code})
+			}
+		case "signal":
+			if err := Clients.SendSingnals(msg); err != "" {
+				fmt.Printf("err: %v\n", err)
+				conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": 500})
+			}
+		default:
+			conn.WriteJSON(map[string]any{"type": "err", "err": "invalid message type", "code": http.StatusBadRequest})
 		}
+
 	}
 }

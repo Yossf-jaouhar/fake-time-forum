@@ -18,6 +18,7 @@ import (
 
 func main() {
 	// Initialize database and chat clients
+	// Initialize database and chat clients
 	db := database.CreateTables()
 	clients := chat.NewClients(db)
 
@@ -65,7 +66,10 @@ func main() {
 		}
 		handlers.Home(w, r, db)
 	})
-
+mux.HandleFunc("/fetchComment",midlware.Authorization(
+	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		chat.FetchChat(w, r,clients,db)
+	}), db))
 	// Protected routes with authorization
 	mux.HandleFunc("/chat", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +90,6 @@ func main() {
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			handlers.AddComments(w, r, db)
 		}), db))
-
 	mux.HandleFunc("/fetchcomment", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			handlers.GetCommentsHandler(w, r, db)
@@ -101,8 +104,8 @@ func main() {
 
 	// Create server with timeouts
 	server := &http.Server{
-		Addr:         ":8080",
-		Handler:      mux,
+		Addr:    ":8080",
+		Handler: mux,
 	}
 
 	// Start server in a goroutine

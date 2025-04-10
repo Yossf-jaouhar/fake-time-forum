@@ -17,6 +17,7 @@ type (
 		Conn map[*websocket.Conn]any
 	}
 	Message struct {
+		Type     string `json:"type"`
 		Content  string `json:"content"`
 		Reciever string `json:"reciever"`
 		Sender   string `json:"sender"`
@@ -29,7 +30,7 @@ func NewClients(db *sql.DB) *Clients {
 		Map: make(map[string]*Client),
 	}
 }
-func (c *Clients) Singal(nickname string, signal string) {
+func (c *Clients) ActiveSingal(nickname string, active string) {
 	c.Lock()
 	defer c.Unlock()
 	for user, client := range c.Map {
@@ -38,28 +39,31 @@ func (c *Clients) Singal(nickname string, signal string) {
 		}
 		for conn := range client.Conn {
 			conn.WriteJSON(map[string]string{
-				"type":     "signal",
-				"signal":   signal,
-				"nickname": nickname,
+				"type":   "status",
+				"active": active,
+				"name":   nickname,
 			})
 		}
 	}
 }
 func (c *Clients) GetClients(user string, db *sql.DB) []struct {
-	Client string `json:"client"`
+	Client string `json:"name"`
 	State  string `json:"state"`
+	Time   string `json:"time"`
 } {
 	c.Lock()
 	defer c.Unlock()
-	res, err := db.Query(`SELECT nickname
+	res, err := db.Query(`SELECT 
+		users.nickname,
+		(
+			SELECT MAX(createdAt) 
+			FROM chat 
+			WHERE (sender = ? AND receiver = users.nickname) 
+			   OR (sender = users.nickname AND receiver = ?)
+		) AS LastSentAt
 	FROM users
-	WHERE nickname != ?
-	ORDER BY 
-		(SELECT MAX(SentAt) 
-		 FROM chat 
-		 WHERE (sender = ? AND receiver = users.nickname) 
-			OR (sender = users.nickname AND receiver = ?)) DESC,
-		nickname ASC;
+	WHERE nickname != ?;
+	
 	`, user, user, user)
 	if err != nil {
 		fmt.Println(err)
@@ -67,29 +71,31 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 	}
 	defer res.Close()
 	var clients []struct {
-		Client string `json:"client"`
+		Client string `json:"name"`
 		State  string `json:"state"`
+		Time   string `json:"time"`
 	}
 	for res.Next() {
-		var client string 
-		res.Scan(&client)
+		var client string
+		var time string
+		res.Scan(&client, &time)
 		if c.Map[client] != nil && len(c.Map[client].Conn) > 0 {
 			clients = append(clients, struct {
-				Client string `json:"client"`
+				Client string `json:"name"`
 				State  string `json:"state"`
-			}{client, "ONLINE"})
+				Time   string `json:"time"`
+			}{client, "on", time})
 		} else {
 			clients = append(clients, struct {
-				Client string `json:"client"`
+				Client string `json:"name"`
 				State  string `json:"state"`
-			}{client, "OFFLINE"})
+				Time   string `json:"time"`
+			}{client, "", time})
 		}
 	}
 	return clients
 }
 func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message {
-	c.Lock()
-	defer c.Unlock()
 	res, _ := db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10 WHERE id > ?`, user1, user2, user2, user1, start)
 	if start == 0 {
 		res, _ = db.Query(`SELECT content,sender,sent_at FROM chat WHERE (sender = ? AND reciever = ?) OR (sender = ? AND reciever = ?) ORDER BY sent_at LIMIT 10`, user1, user2, user2, user1)
@@ -102,18 +108,43 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 	}
 	return messages
 }
-func (c *Clients) SendMsg(msg *Message, db *sql.DB) string {
-	c.Lock()
-	for conn := range c.Map[msg.Reciever].Conn {
-		conn.WriteJSON(msg)
-	}
-	c.Unlock()
+
+func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string, int) {
+	
 	_, err := db.Exec(`INSERT INTO chat (sender,receiver,content) VALUE (?,?,?)`, msg.Sender, msg.Reciever, msg.Content)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "user doesnt exists"
+			return "user doesnt exists", 404
 		}
-		return "internal server error"
+		return "internal server error", 500
 	}
+	if c.Map[msg.Reciever] != nil {
+		c.Lock()
+	for conn := range c.Map[msg.Reciever].Conn {
+		err := conn.WriteJSON(msg)
+		if err != nil {
+			c.Unlock()
+			return "err sending message", 500
+		}
+	}
+	c.Unlock()
+	}
+	return "", 200
+}
+func (c *Clients) SendSingnals(msg *Message) string {
+	if c.Map[msg.Reciever] == nil {
+		return ""
+	}
+	c.Lock()
+	for conn := range c.Map[msg.Reciever].Conn {
+		err := conn.WriteJSON(msg)
+		if err != nil {
+			c.Unlock()
+			return "err sending signal"
+		}
+	}
+	fmt.Println("hiii")
+
+	c.Unlock()
 	return ""
 }

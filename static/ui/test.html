@@ -1,427 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="test.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect - Chat & Forum</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Social App</title>
 </head>
+
 <body>
-    <div class="navbar">
-        <div class="logo">Connect</div>
-        <div class="nav-links">
-            <a href="#">Posts</a>
-            <a href="#">Chats</a>
-        </div>
 
-    </div>
-
+    <header>
+        <div>Social App</div>
+        <button>Logout</button>
+    </header>
+<div class="author">
+    <div class="name">theone</div>
+    <div class="avatar">T</div>
+    <div class="time">1s ago</div>
+</div>
+<div class="content">hiiiii</div>
     <div class="main-container">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>Users</h2>
+        <!-- Left Sidebar -->
+        <div class="left-bar">
+            <div class="userbubble online" onclick="showConversation('John Doe')">
+                <span>John Doe</span>
+                <span>Online</span>
             </div>
-            <div class="sidebar-content">
-                <ul class="user-list">
-                    <li class="user-item active">
-                        <div class="user-avatar-item">SA</div>
-                        <div class="user-details">
-                            <div class="user-name">Sarah Anderson</div>
-                            <div class="user-status">Online</div>
-                        </div>
-                        <div class="user-online-status online"></div>
-                    </li>
-                    <li class="user-item">
-                        <div class="user-avatar-item">JB</div>
-                        <div class="user-details">
-                            <div class="user-name">John Blake</div>
-                            <div class="user-status">Away</div>
-                        </div>
-                        <div class="user-online-status offline"></div>
-                    </li>
-                    <li class="user-item">
-                        <div class="user-avatar-item">MT</div>
-                        <div class="user-details">
-                            <div class="user-name">Mark Thompson</div>
-                            <div class="user-status">Online</div>
-                        </div>
-                        <div class="user-online-status online"></div>
-                    </li>
-                    <li class="user-item">
-                        <div class="user-avatar-item">EL</div>
-                        <div class="user-details">
-                            <div class="user-name">Emma Lewis</div>
-                            <div class="user-status">Last seen 2h ago</div>
-                        </div>
-                        <div class="user-online-status offline"></div>
-                    </li>
-                    <li class="user-item">
-                        <div class="user-avatar-item">RJ</div>
-                        <div class="user-details">
-                            <div class="user-name">Robert Johnson</div>
-                            <div class="user-status">Online</div>
-                        </div>
-                        <div class="user-online-status online"></div>
-                    </li>
-                    <li class="user-item">
-                        <div class="user-avatar-item">AP</div>
-                        <div class="user-details">
-                            <div class="user-name">Anna Parker</div>
-                            <div class="user-status">In a meeting</div>
-                        </div>
-                        <div class="user-online-status offline"></div>
-                    </li>
-                    <li class="user-item">
-                        <div class="user-avatar-item">DW</div>
-                        <div class="user-details">
-                            <div class="user-name">David Wilson</div>
-                            <div class="user-status">Online</div>
-                        </div>
-                        <div class="user-online-status online"></div>
-                    </li>
-                </ul>
+            <div class="userbubble typing" onclick="showConversation('Jane Smith')">
+                <span>Jane Smith</span>
+                <span>Typing...</span>
+            </div>
+            <div class="userbubble" onclick="showConversation('Mark Wilson')">
+                <span>Mark Wilson</span>
+                <span>Offline</span>
+            </div>
+            <div class="userbubble online" onclick="showConversation('Alice Johnson')">
+                <span>Alice Johnson</span>
+                <span>Online</span>
             </div>
         </div>
 
-        <div class="content-area">
-            <div class="chat-header">
-                <div class="chat-title">
-                    <div class="user-avatar-item">SA</div>
-                    <div>
-                        <h2>Sarah Anderson</h2>
-                        <div class="chat-status">Online</div>
+        <!-- Right Sidebar -->
+        <div class="right-bar">
+            <!-- Post Creation Area -->
+            <input type="text" class="post-title" placeholder="Enter post title" />
+            <textarea class="post-content" placeholder="Enter post content"></textarea>
+
+            <!-- Category Selection -->
+            <div>
+                <span class="category-bubble">Category 1</span>
+                <span class="category-bubble">Category 2</span>
+                <span class="category-bubble">Category 3</span>
+            </div>
+
+            <button class="post-submit-btn">Submit Post</button>
+
+            <!-- Posts from Other Users -->
+            <div class="posts">
+                <div class="post" id="1">
+                    <div class="publisher">
+                        <div class="name">jhon doe</div>
+                        <div class="avatar">jd</div>
+                    </div>
+                    <div class="post-title">Post</div>
+                    <div class="post-content">This is a sample post content.</div>
+                    <div class="categories">
+                        <div class="category">cinema</div>
+                        <div class="category"> sport</div>
                     </div>
                 </div>
-                <div class="header-actions">
-                    <button class="action-button">⋮</button>
+                <div class="post">
+                    <div class="post-title">Post by Alice Johnson</div>
+                    <div class="post-content">Here's another example of a post.</div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="chat-messages">
-                <div class="message received">
-                    <div class="message-content">Hi there! How are you doing today?</div>
-                    <div class="message-time">12:05 PM</div>
-                </div>
-                <div class="message sent">
-                    <div class="message-content">I'm doing great, thanks for asking! How about you?</div>
-                    <div class="message-time">12:07 PM</div>
-                </div>
-                <div class="message received">
-                    <div class="message-content">Pretty good! Just wrapping up some work before lunch. Are we still on for that meeting tomorrow?</div>
-                    <div class="message-time">12:10 PM</div>
-                </div>
-                <div class="message sent">
-                    <div class="message-content">Absolutely! I've prepared all the materials we need. Would 10 AM work for you?</div>
-                    <div class="message-time">12:12 PM</div>
-                </div>
-                <div class="message received">
-                    <div class="message-content">Perfect! Let's meet tomorrow at 10 AM then. I'll send you the conference room details shortly.</div>
-                    <div class="message-time">12:30 PM</div>
-                </div>
-            </div>
+    <!-- Conversation Div (Initially Hidden) -->
+    <div id="conversation" style="display: none;">
+        <div class="conversation-header">
+            <span id="conversation-title"></span>
+            <button onclick="hideConversation()">Cancel</button>
+        </div>
 
-            <div class="chat-input">
-                <input type="text" class="message-input" placeholder="Type a message...">
-                <button class="send-button">➤</button>
+        <div class="conversation-body">
+            <div class="message received">
+                <span>Hey, how are you?</span>
             </div>
+            <div class="message sent">
+                <span>I'm good, thanks! How about you?</span>
+            </div>
+        </div>
+
+        <div class="conversation-footer">
+            <input type="text" id="message-input" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
-        // User list item click handler
-        document.querySelectorAll('.user-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update the chat header with the selected user
-                const userName = this.querySelector('.user-name').textContent;
-                const userStatus = this.querySelector('.user-status').textContent;
-                const userInitials = this.querySelector('.user-avatar-item').textContent;
-                const isOnline = this.querySelector('.user-online-status').classList.contains('online');
-                
-                document.querySelector('.chat-title h2').textContent = userName;
-                document.querySelector('.chat-status').textContent = userStatus;
-                document.querySelector('.chat-title .user-avatar-item').textContent = userInitials;
-                
-                // Clear the chat messages (in a real app, you'd load the messages for this user)
-                document.querySelector('.chat-messages').innerHTML = '';
-                
-                // Add a welcome message
-                const messagesContainer = document.querySelector('.chat-messages');
-                const welcomeMessage = document.createElement('div');
-                welcomeMessage.className = 'message received';
-                welcomeMessage.innerHTML = `
-                    <div class="message-content">Hi there! This is the beginning of your conversation with ${userName}.</div>
-                    <div class="message-time">Just now</div>
-                `;
-                messagesContainer.appendChild(welcomeMessage);
-            });
-        });
-
-        // Send message functionality
-        document.querySelector('.send-button').addEventListener('click', function() {
-            const input = document.querySelector('.message-input');
-            const message = input.value.trim();
-            
-            if (message) {
-                const messagesContainer = document.querySelector('.chat-messages');
-                const now = new Date();
-                const time = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-                
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message sent';
-                messageElement.innerHTML = `
-                    <div class="message-content">${message}</div>
-                    <div class="message-time">${time}</div>
-                `;
-                
-                messagesContainer.appendChild(messageElement);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                input.value = '';
-
-                // Simulate receiving a response (in a real app, this would be from the server)
-                setTimeout(() => {
-                    const activeUser = document.querySelector('.user-item.active .user-name').textContent;
-                    const responseElement = document.createElement('div');
-                    responseElement.className = 'message received';
-                    responseElement.innerHTML = `
-                        <div class="message-content">Thanks for your message! This is an automated response from ${activeUser}.</div>
-                        <div class="message-time">${time}</div>
-                    `;
-                    
-                    messagesContainer.appendChild(responseElement);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                }, 1000);
-            }
-        });
-
-        // Allow sending messages with Enter key
-        document.querySelector('.message-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.querySelector('.send-button').click();
-                e.preventDefault();
-            }
-        });
-
-        // Function to switch between chat and forum views
-        function toggleView(view) {
-            const contentArea = document.querySelector('.content-area');
-            
-            if (view === 'chat') {
-                const activeUser = document.querySelector('.user-item.active .user-name').textContent;
-                const activeUserStatus = document.querySelector('.user-item.active .user-status').textContent;
-                const activeUserInitials = document.querySelector('.user-item.active .user-avatar-item').textContent;
-                
-                contentArea.innerHTML = `
-                    <div class="chat-header">
-                        <div class="chat-title">
-                            <div class="user-avatar-item">${activeUserInitials}</div>
-                            <div>
-                                <h2>${activeUser}</h2>
-                                <div class="chat-status">${activeUserStatus}</div>
-                            </div>
-                        </div>
-                        <div class="header-actions">
-                            <button class="action-button">⋮</button>
-                        </div>
-                    </div>
-
-                    <div class="chat-messages">
-                        <div class="message received">
-                            <div class="message-content">Hi there! This is the beginning of your conversation with ${activeUser}.</div>
-                            <div class="message-time">Just now</div>
-                        </div>
-                    </div>
-
-                    <div class="chat-input">
-                        <input type="text" class="message-input" placeholder="Type a message...">
-                        <button class="send-button">➤</button>
-                    </div>
-                `;
-            } else if (view === 'forum') {
-                contentArea.innerHTML = `
-                    <div class="forum-posts">
-                        <div class="forum-post">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <div class="post-avatar">JD</div>
-                                    <div class="post-name">John Doe</div>
-                                </div>
-                                <div class="post-date">Today at 10:15 AM</div>
-                            </div>
-                            <div class="post-content">
-                                <p>I've been thinking about the new design system we're implementing. What do you all think about using a more minimalist approach for our UI components?</p>
-                            </div>
-                            <div class="post-chob">
-                                <div class="post-actions cats">
-                                <div class="post-action">football</div>
-                                <div class="post-action">ronaldo</div>
-                                <div class="post-action">perez</div>
-                            </div>
-                            </div>
-                            <div class="post-comments">
-                                <div class="comment">
-                                    <div class="comment-header">
-                                        <span class="comment-author">Sarah Anderson</span>
-                                        <span class="comment-date">10:30 AM</span>
-                                    </div>
-                                    <div class="comment-content">
-                                        <p>I think that's a great idea! Minimalism can really help with user focus.</p>
-                                    </div>
-                                </div>
-                                <div class="comment">
-                                    <div class="comment-header">
-                                        <span class="comment-author">Mark Thompson</span>
-                                        <span class="comment-date">10:45 AM</span>
-                                    </div>
-                                    <div class="comment-content">
-                                        <p>I agree, but we need to be careful not to sacrifice functionality for aesthetics.</p>
-                                    </div>
-                                </div>
-                                <div class="comment">
-                                    <div class="comment-header">
-                                        <span class="comment-author">Sarah Anderson</span>
-                                        <span class="comment-date">10:30 AM</span>
-                                    </div>
-                                    <div class="comment-content">
-                                        <p>I think that's a great idea! Minimalism can really help with user focus.</p>
-                                    </div>
-                                </div>
-                                <div class="comment">
-                                    <div class="comment-header">
-                                        <span class="comment-author">Mark Thompson</span>
-                                        <span class="comment-date">10:45 AM</span>
-                                    </div>
-                                    <div class="comment-content">
-                                        <p>I agree, but we need to be careful not to sacrifice functionality for aesthetics.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="forum-post">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <div class="post-avatar">EL</div>
-                                    <div class="post-name">Emma Lewis</div>
-                                </div>
-                                <div class="post-date">Yesterday at 3:45 PM</div>
-                            </div>
-                            <div class="post-content">
-                                <p>Has anyone had experience with CSS Grid for complex layouts? I'm considering using it for our dashboard redesign.</p>
-                            </div>
-                            <div class="post-actions">
-                                <div class="post-action">👍 8</div>
-                                <div class="post-action">💬 3</div>
-                                <div class="post-action">Share</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-form-container">
-                    <h2 class="form-title">Create New Post</h2>
-                    <form id="postForm">
-                      <div class="form-group">
-                        <label for="post-title">Post Title</label>
-                        <input 
-                          type="text" 
-                          id="post-title" 
-                          name="title" 
-                          placeholder="Enter a title for your post"
-                          required
-                        >
-                      </div>
-                        <div class="form-group">
-                        <label for="post-content">Post Content</label>
-                        <textarea 
-                          id="post-content" 
-                          name="content" 
-                          placeholder="Write your post content here..."
-                          required
-                        ></textarea>
-                      </div>
-                        <div class="form-group">
-                        <label>Categories</label>
-                        <div class="categories-container">
-                          <div class="categories-grid">
-                            <div class="category-option">
-                              <input type="checkbox" id="category-technology" name="categories" value="Technology">
-                              <label for="category-technology">Technology</label>
-                            </div>
-                            <div class="category-option">
-                              <input type="checkbox" id="category-business" name="categories" value="Business">
-                              <label for="category-business">Business</label>
-                            </div>
-                            <div class="category-option">
-                              <input type="checkbox" id="category-health" name="categories" value="Health">
-                              <label for="category-health">Health</label>
-                            </div>
-                      <button type="submit" class="submit-button">Publish Post</button>
-                    </form>
-                  </div>
-                `;
-            }
-
-            // Reattach event listeners
-            if (view === 'chat') {
-                document.querySelector('.send-button').addEventListener('click', function() {
-                    const input = document.querySelector('.message-input');
-                    const message = input.value.trim();
-                    
-                    if (message) {
-                        const messagesContainer = document.querySelector('.chat-messages');
-                        const now = new Date();
-                        const time = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-                        
-                        const messageElement = document.createElement('div');
-                        messageElement.className = 'message sent';
-                        messageElement.innerHTML = `
-                            <div class="message-content">${message}</div>
-                            <div class="message-time">${time}</div>
-                        `;
-                        
-                        messagesContainer.appendChild(messageElement);
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        input.value = '';
-
-                        // Simulate receiving a response
-                        setTimeout(() => {
-                            const activeUser = document.querySelector('.chat-title h2').textContent;
-                            const responseElement = document.createElement('div');
-                            responseElement.className = 'message received';
-                            responseElement.innerHTML = `
-                                <div class="message-content">Thanks for your message! This is an automated response from ${activeUser}.</div>
-                                <div class="message-time">${time}</div>
-                            `;
-                            
-                            messagesContainer.appendChild(responseElement);
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        }, 1000);
-                    }
-                });
-
-                document.querySelector('.message-input').addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        document.querySelector('.send-button').click();
-                        e.preventDefault();
-                    }
-                });
-            }
+        function showConversation(userName) {
+            document.getElementById('conversation').style.display = 'block';
+            document.getElementById('conversation-title').textContent = "Conversation with " + userName;
         }
 
-        // Switch between chat and forum when clicking on nav links
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
-                this.classList.add('active');
-                
-                if (this.textContent === 'Posts') {
-                    toggleView('forum');
-                } else if (this.textContent === 'Chats') {
-                    toggleView('chat');
-                }
-            });
-        });
+        function hideConversation() {
+            document.getElementById('conversation').style.display = 'none';
+        }
+
+        function sendMessage() {
+            let message = document.getElementById('message-input').value;
+            if (message.trim()) {
+                let messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'sent');
+                messageDiv.innerHTML = `<span>${message}</span>`;
+                document.querySelector('.conversation-body').appendChild(messageDiv);
+                document.getElementById('message-input').value = '';
+            }
+        }
     </script>
+
 </body>
+
 </html>

@@ -2,7 +2,8 @@ import { auth } from "./components.js";
 import { register, login } from "./api.js";
 export{initauth}
 function initauth(){
-let ctr = document.querySelector(".container")
+let ctr = document.body
+ctr.innerHTML =""
 let authdiv = document.createElement("div") 
 authdiv.innerHTML= auth()
 ctr.appendChild(authdiv)

@@ -26,14 +26,14 @@ func fetchPosts(start int, db *sql.DB) ([]Post, error) {
 			u.nickname
 		FROM 
 			Posts p
-		JOIN 
-			users u ON p.ID_User = u.ID
-		ORDER BY 
-			p.DateCreation DESC `
+			INNER JOIN users u ON p.ID_User = u.ID
+			`
 	if start > 0 {
-		query += fmt.Sprintf(" where p.ID < %d", start)
+		query += fmt.Sprintf(" WHERE p.ID < %d", start)
 	}
-	query += " LIMIT 10"
+	query += ` 
+		ORDER BY 
+			p.DateCreation DESC  LIMIT 10`
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -98,10 +98,10 @@ func GetPostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	// Parse start query parameter (default to 1 if not provided)
 	start := 0
-	lastPost := r.URL.Query().Get("lastPost")
+	lastPost := r.URL.Query().Get("start")
 	if lastPost != "" {
 		_, err := fmt.Sscanf(lastPost, "%d", &start)
-		if err != nil || start < 1 {
+		if err != nil || start < 0 {
 			response.Respond("invalde query", http.StatusBadRequest, w)
 			return
 		}

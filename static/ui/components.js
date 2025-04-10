@@ -1,5 +1,7 @@
-export{auth, comment, post, postinput, sidebar, navbar}
-let auth = ()=> `<div class="tabs">
+import { initauth } from "./auth.js";
+
+export { auth, comment, post, postinput, header, userBubble, persoChat }
+let auth = () => `<div class="tabs">
             <div class="tab active" id="login-tab">Login</div>
             <div class="tab" id="register-tab">Register</div>
         </div>
@@ -56,7 +58,7 @@ let auth = ()=> `<div class="tabs">
                 <button type="submit">Register</button>
             </form>
                 </div>`
-let comment = (comment)=> `<div class="comment">
+let comment = (comment) => `<div class="comment">
     <div class="comment-header">
         <span class="comment-author">${comment.sender}</span>
         <span class="comment-date">${comment.date}</span>
@@ -65,27 +67,39 @@ let comment = (comment)=> `<div class="comment">
         <p>${comment.content}</p>
     </div>
                 </div>`
-let post = (post)=>document.createRange().createContextualFragment(`<div class="forum-post">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <div class="post-avatar">JD</div>
-                                    <div class="post-name">${post.publisher}</div>
-                                </div>
-                                <div class="post-date">${post.date_creation}</div>
-                            </div>
-                            <div class="post-content">
-                                <p>${post.content}</p>
-                            </div>
-                            <div class="post-categories">
-                            ${post.categories.map(cat => {
-                                return `<div class="post-action">${cat}</div>`
-                            }).join("")}
-                            </div>
-                            </div>
-                            <div class="post-comments">
-                            </div>
-                </div>`).firstElementChild
-let postinput = (categories)=> `<div class="post-form-container">
+
+function post(postData) {
+    // Extract initials for avatar
+    const nameParts = postData.publisher.split(' ');
+    const initials = nameParts.map(part => part[0]).join('').toUpperCase();
+
+    // Format categories
+    const categoriesHTML = postData.categories.map(category =>
+        `<div class="category">${category}</div>`
+    ).join('');
+
+    // Create post HTML
+    const postHTML = `
+                        <div class="publisher">
+                          <div class="name">${postData.publisher}</div>
+                          <div class="avatar">${initials}</div>
+                        </div>
+                        <div class="post-title">${postData.title}</div>
+                        <div class="post-content">${postData.content}</div>
+                        <div class="categories">
+                          ${categoriesHTML}
+                        </div>
+                    `;
+    let post = document.createElement('div')
+    post.classList.add('post')
+    post.id = postData.id
+    post.innerHTML = postHTML
+    return post;
+}
+function postinput(categories) {
+    // Create a container div and set innerHTML
+    const container = document.createElement('div');
+    container.innerHTML = `<div class="post-form-container">
                     <h2 class="form-title">Create New Post</h2>
                     <form id="postForm">
                         <div class="form-group">
@@ -122,30 +136,145 @@ let postinput = (categories)=> `<div class="post-form-container">
                         </div>
                         <button type="submit" class="submit-button">Publish Post</button>
                     </form>
-                </div>`
-let sidebar = (users) => `<div class="sidebar">
-                    <div class="sidebar-header">
-                        <h2>Users</h2>
-                    </div>
-                    <div class="sidebar-content">
-                        <ul class="user-list">
-                            ${users.map(user => `
-                                <li class="user-item ${user.active ? 'active' : ''}">
-                                    <div class="user-avatar-item">CR7</div>
-                                    <div class="user-details">
-                                        <div class="user-name">${user.name}</div>
-                                        <div class="user-status">${user.active ? 'online' : 'offline'}</div>
-                                    </div>
-                                    <div class="user-online-status ${user.active ? 'online' : 'offline'}"></div>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                </div>`
-let navbar = ()=>document.createRange().createContextualFragment(`<div class="navbar">
-        <div class="logo">Connect</div>
-        <div class="nav-links">
-            <a href="#">Posts</a>
-            <a href="#">Chats</a>
-        </div>
-                </div>`).firstElementChild
+                </div>`;
+
+    // Get the actual form element from within the container
+    const form = container.querySelector('#postForm');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Extract form values
+        const title = form.querySelector('#post-title').value.trim();
+        const content = form.querySelector('#post-content').value.trim();
+
+        // Extract selected categories
+        const selectedCategories = Array.from(
+            form.querySelectorAll('input[name="categories"]:checked')
+        ).map(input => input.value);
+
+        // Prepare JSON body
+        const postData = {
+            title,
+            content,
+            categories: selectedCategories
+        };
+
+        try {
+            const response = await fetch('/addpost', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(postData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Post created successfully:', result);
+        } catch (error) {
+            console.error('Failed to create post:', error);
+        }
+    });
+
+    return container.firstElementChild;
+}
+let userBubble = (uData, personalChat) => {
+    let uBuble = document.createElement('div')
+    uBuble.id = uData.name
+    uBuble.dataset.time = uData.time
+    uBuble.classList.add("user")
+    if (uData.active) { uBuble.classList.add(on) }
+    uBuble.textContent = uData.name
+    uBuble.onClick(() => {
+        personalChat.id = uData.name
+        personalChat.classList.add("shown")
+    })
+    return uBuble
+}
+let persoChat = (ws) => {
+    let pChat = document.createElement('div')
+    pChat.classList.add('chatholder','show')
+
+    let chat = document.createElement('div')
+chat.classList.add('messages')
+let mesg1 =document.createElement('div')
+mesg1.classList.add('sent')
+mesg1.innerHTML = `<div class="author">
+<div class="avatar">y</div>
+    <div class="name">you</div>
+    
+    <div class="time">1s ago</div
+</div>
+<div class="content">hiiiii</div>`
+let mesg2 =document.createElement('div')
+mesg2.classList.add('recieved')
+mesg2.innerHTML = `<div class="author">
+<div class="avatar">my</div>
+    <div class="name">not you</div>
+    
+    <div class="time">1s ago</div>
+</div>
+<div class="content">hiiiii</div>`
+chat.append(mesg1,mesg2)
+    // Create input field
+    let input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Type a message...';
+    input.classList.add('chat-input');
+    let cancel = document.createElement('button');
+    cancel.textContent = 'Close';
+    cancel.classList.add('cancel');
+    pChat.append(cancel, chat, input);
+    cancel.onclick = () => {
+        pChat.classList.remove('shown');
+        chat.innerHTML = "";
+        input.value = "";
+    };
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && input.value.trim() !== "") {
+            let msg = document.createElement('msg');
+            msg.classList.add('messageSent');
+            let data = input.value.trim()
+            msg.textContent = data;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: "message",
+                    reciever: pChat.id,
+                    content: data
+                }));
+            }
+            input.value = "";
+        } else if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: "signal",
+                reciever: pChat.id,
+                content: "typing"
+            }));
+        }
+    });
+    return pChat
+}
+let header = () => {
+    let header = document.createElement('header')
+    let logout = document.createElement('button')
+    logout.innerText = "logout"
+    logout.addEventListener('click', () => {
+        window.dispatchEvent(new Event('logout'))
+        fetch('/logout',{method:"POST"}).then(() => {
+            initauth()
+        }).catch(err => {
+            throw err
+        })
+    })
+    let spe = document.createElement('div')
+    spe.innerText = "fake-time forum"
+    header.appendChild(spe)
+    header.appendChild(logout)
+    return header
+}

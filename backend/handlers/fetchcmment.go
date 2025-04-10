@@ -52,7 +52,7 @@ func fetchComments(postID, start int, db *sql.DB) ([]Comment, error) {
 // Handler for fetching comments of a post
 func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// For simplicity, we assume the post_id is provided as a query parameter
-	postID := r.URL.Query().Get("post_id")
+	postID := r.URL.Query().Get("p_id")
 	start := 0
 	startInt := r.URL.Query().Get("start")
 	if startInt != "" {
