@@ -2,7 +2,6 @@ package chat
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/backend/response"
 	"net/http"
 	"strconv"
@@ -21,7 +20,6 @@ func FetchChat(w http.ResponseWriter, r *http.Request, clients *Clients, db *sql
 		response.Respond("invalid start", http.StatusBadRequest, w)
 		return
 	}
-	fmt.Println(start)
 	msg := clients.GetChat(username, with, start, db)
 	response.Respond(msg, http.StatusOK, w)
 }

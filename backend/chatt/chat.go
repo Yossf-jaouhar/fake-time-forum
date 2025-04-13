@@ -106,7 +106,7 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 		FROM chat 
 		WHERE ((sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)) 
 		  AND id > ?
-		ORDER BY createdAt 
+		ORDER BY createdAt DESC
 		LIMIT 10
 	`, user1, user2, user2, user1, start)
 	} else {
@@ -114,11 +114,10 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 		SELECT content, sender, createdAt , id
 		FROM chat 
 		WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) 
-		ORDER BY createdAt 
+		ORDER BY createdAt DESC
 		LIMIT 10
 	`, user1, user2, user2, user1)
 	}
-	fmt.Println(err)
 if err!=nil {
 	return nil
 }
@@ -128,14 +127,12 @@ if err!=nil {
 		res.Scan(&msg.Content, &msg.Sender, &msg.SentAt,&msg.Id)
 		messages = append(messages, msg)
 	}
-	fmt.Println(start)
 	return messages
 }
 
 func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string, int) {
 	_, err := db.Exec(`INSERT INTO chat (sender,receiver,content) VALUES (?,?,?)`, msg.Sender, msg.Reciever, msg.Content)
 	if err != nil {
-		fmt.Println(err)
 		if err == sql.ErrNoRows {
 			return "user doesnt exists", 404
 		}
