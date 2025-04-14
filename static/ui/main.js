@@ -1,4 +1,4 @@
-import { is } from "./api.js";
+import { Categories, is } from "./api.js";
 import { initauth } from "./auth.js";
 import { renderMainPage } from "./render.js";
 
@@ -8,4 +8,8 @@ if (!isauth) {
     initauth()
 } else {
     renderMainPage()
+    setTimeout(()=>{    console.log(document.body.innerHTML);
+    }
+,1222)
+    
 }

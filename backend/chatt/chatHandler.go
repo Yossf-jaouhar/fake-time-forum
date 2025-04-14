@@ -41,7 +41,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		conn.Close()
 	}()
 	otherClients := Clients.GetClients(username, db)
-	fmt.Println(otherClients)
 	conn.WriteJSON(map[string]any{"type": "clients", "data": otherClients})
 	for {
 		msg := &Message{}
@@ -59,7 +58,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		}
 		msg.SentAt = time.Now().String()
 		msg.Sender = username
-		fmt.Println(msg)
 		switch msg.Type {
 		case "message":
 			if err, code := Clients.SendMsg(msg, db); err != "" {
@@ -67,7 +65,6 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 			}
 		case "signal":
 			if err := Clients.SendSingnals(msg); err != "" {
-				fmt.Printf("err: %v\n", err)
 				conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": 500})
 			}
 		default:

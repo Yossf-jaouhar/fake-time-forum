@@ -39,9 +39,9 @@ func (c *Clients) ActiveSingal(nickname string, active string) {
 			continue
 		}
 		for conn := range client.Conn {
-			conn.WriteJSON(map[string]string{
+			conn.WriteJSON(map[string]any{
 				"type":   "status",
-				"active": active,
+				"state": active=="online",
 				"name":   nickname,
 			})
 		}
@@ -105,7 +105,7 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 		SELECT content, sender, createdAt ,id
 		FROM chat 
 		WHERE ((sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)) 
-		  AND id > ?
+		  AND id < ?
 		ORDER BY createdAt DESC
 		LIMIT 10
 	`, user1, user2, user2, user1, start)

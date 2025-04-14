@@ -13,6 +13,7 @@ type Comment struct {
 	ID        int       `json:"id"`
 	UserID    int       `json:"user_id"`
 	PostID    int       `json:"post_id"`
+	Usern     string    `json:"user"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 }
@@ -20,7 +21,7 @@ type Comment struct {
 // Fetch comments for a specific post_id
 func fetchComments(postID, start int, db *sql.DB) ([]Comment, error) {
 	var comments []Comment
-	query := "SELECT id, post_id, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC"
+	query := "SELECT id,ID_User, content, DateCreation FROM Comment WHERE ID_post = ? ORDER BY DateCreation DESC"
 	if start > 0 {
 		query += fmt.Sprintf(" AND id < %d", start)
 	}
@@ -31,13 +32,14 @@ func fetchComments(postID, start int, db *sql.DB) ([]Comment, error) {
 		return nil, err
 	}
 	defer rows.Close()
-
 	// Iterate through the rows and populate the comments slice
 	for rows.Next() {
 		var comment Comment
-		if err := rows.Scan(&comment.ID, &comment.UserID, &comment.PostID, &comment.Content, &comment.CreatedAt); err != nil {
+		if err := rows.Scan(&comment.ID, &comment.UserID, &comment.Content, &comment.CreatedAt); err != nil {
 			return nil, err
 		}
+		uq := `SELECT nickname FROM users WHERE ID = ?`
+		db.QueryRow(uq, comment.UserID).Scan(&comment.Usern)
 		comments = append(comments, comment)
 	}
 
@@ -57,7 +59,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	startInt := r.URL.Query().Get("start")
 	if startInt != "" {
 		_, err := fmt.Sscanf(startInt, "%d", &start)
-		if err != nil || start < 1 {
+		if err != nil || start < 0 {
 			response.Respond("invalde query", http.StatusBadRequest, w)
 			return
 		}

@@ -8,7 +8,7 @@ import (
 
 func Getcategories(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	cat := []string{}
-	rows, err := db.Query(`SELECT Name_Category FROM Catrgory`)
+	rows, err := db.Query(`SELECT Name_Category FROM Category`)
 	if err != nil {
 		response.Respond("internal server error", http.StatusInternalServerError, w)
 		return

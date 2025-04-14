@@ -15,6 +15,7 @@ type post struct {
 	Content    string   `json:"content"`
 	Categories []string `json:"categories"`
 }
+
 // AddPost handles the creation of a new post by a user.
 func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method != http.MethodPost {
@@ -44,6 +45,7 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	idPost, _ := result.LastInsertId()
 	for _, categoryID := range post.Categories {
+
 		_, err := db.Exec(`INSERT INTO PostCategory (ID_Post, ID_Category)
 		SELECT ?, ID FROM Category WHERE Name_Category = ?;`, int(idPost), categoryID)
 		if err != nil {
@@ -51,5 +53,8 @@ func AddPost(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			continue
 		}
 	}
-	response.Respond("goood", 200, w)
+	response.Respond(struct {
+		Id        int    `json:"id"`
+		Publisher string `json:"publisher"`
+	}{Id: int(idPost), Publisher: r.Context().Value("userName").(string)}, 200, w)
 }

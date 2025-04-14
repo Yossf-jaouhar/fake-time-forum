@@ -17,6 +17,7 @@ type comment struct {
 // AddComments handles adding a comment to a post.
 func AddComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.Method != http.MethodPost {
+		response.Respond("shiiit method not allowed", 405, w)
 		return
 	}
 
@@ -34,9 +35,12 @@ func AddComments(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	err = AddCommentsInDB(db, userID, comment.PostId, comment.Comment)
 	if err != nil {
-	response.Respond("internal server err", 500, w)
-	return
+		response.Respond("internal server err", 500, w)
+		return
 	}
+	response.Respond(struct {
+		User string `json:"user"`
+	}{User: r.Context().Value("userName").(string)}, 200, w)
 }
 
 // AddCommentsInDB inserts a new comment into the database associated with a specific user and post.

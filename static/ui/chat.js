@@ -4,7 +4,7 @@ import { sort } from "./sort.js"
 export const wschat = () => {
     const socket = new WebSocket("/chat")
     let pChat = persoChat(socket)
-    const chat = document.createElement('aside')
+    const chat = document.createElement('div')
     chat.classList.add('leftsec')
     document.body.appendChild(chat)
     document.body.appendChild(pChat)
@@ -76,20 +76,18 @@ const HandelSignals = (signal) => {
     }, 999)
 }
 
-const InitUsers = (users, chat,pChat) => {
-    console.log(users);
-    
-    users?.forEach(element => {
-        console.log(element);
-        
+const InitUsers = (users, chat,pChat) => {    
+    users?.forEach(element => {        
         chat.append(userBubble(element,pChat))
     });
+    sort()
 }
 const HandleSts = (sender, chat,Chat) => {
-    const target = document.body.querySelector(`#${sender.name}`)
+    let target = document.body.querySelector(`#${sender.name}`)
     if (!target) {
+        sender.time = ""        
         target = userBubble(sender,Chat)
-        chat.appendChild(target)
+        chat.append(target)
         sort()
     } else {
         target.classList.toggle("on")

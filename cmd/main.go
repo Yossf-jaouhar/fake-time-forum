@@ -98,13 +98,11 @@ mux.HandleFunc("/fetchChat",midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			handlers.GetCommentsHandler(w, r, db)
 		}), db))
-	/*
 	   	mux.HandleFunc("/categories", midlware.Authorization(
 	   		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	   			handlers.Getcategories(w, r, db)
 	   		}), db))
 	   //deprecated
-	*/
 
 	// Create server with timeouts
 	server := &http.Server{

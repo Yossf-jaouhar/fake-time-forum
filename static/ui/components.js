@@ -1,5 +1,6 @@
-import { loadChat } from "./api.js";
+import { loadChat, loadComments } from "./api.js";
 import { initauth } from "./auth.js";
+import { toast } from "./chat.js";
 
 export { auth, comment, post, postinput, header, userBubble, persoChat, msg }
 let auth = () => `<div class="tabs">
@@ -59,15 +60,20 @@ let auth = () => `<div class="tabs">
                 <button type="submit">Register</button>
             </form>
                 </div>`
-let comment = (comment) => `<div class="comment">
+let comment = (comment) => {
+    let cmment = document.createElement('div')
+    cmment.classList.add('comment')
+    cmment.innerHTML = `
     <div class="comment-header">
-        <span class="comment-author">${comment.sender}</span>
-        <span class="comment-date">${comment.date}</span>
+        <span class="comment-author">${comment.user}</span>
+        <span class="comment-date">${time(comment.created_at)}</span>
     </div>
     <div class="comment-content">
         <p>${comment.content}</p>
     </div>
-                </div>`
+                `
+    return cmment
+}
 
 function post(postData) {
     // Extract initials for avatar
@@ -75,28 +81,74 @@ function post(postData) {
     const initials = nameParts.map(part => part[0]).join('').toUpperCase();
 
     // Format categories
-    const categoriesHTML = postData.categories.map(category =>
+    const categoriesHTML = postData.categories?.map(category =>
         `<div class="category">${category}</div>`
     ).join('');
 
     // Create post HTML
-    const postHTML = `
+    const postHTML = `<div class="post-container">
                         <div class="publisher">
-                          <div class="name">${postData.publisher}</div>
-                          <div class="avatar">${initials}</div>
+                            <div class="avatar">${initials}</div>
+                            <div class="name">${postData.publisher}</div>
                         </div>
                         <div class="post-title">${postData.title}</div>
+                        <div class="post-createdAt">${time(postData.date_creation)}
                         <div class="post-content">${postData.content}</div>
                         <div class="categories">
-                          ${categoriesHTML}
+                          ${categoriesHTML ? categoriesHTML : ""}
+                        </div>
                         </div>
                     `;
+    let cmtsArea = document.createElement('div')
+    cmtsArea.classList.add('comment-holder','hide')
+    let comments = document.createElement('div')
+    comments.classList.add('comment-list')
+    cmtsArea.append(comments)
+    let commentIN = document.createElement('input')
+
+    commentIN.classList.add('comment-input')
+    cmtsArea.append(commentIN)
+    commentIN.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter' && commentIN.value.trim() !== "") {
+            let cmt = commentIN.value.trim()
+            try {
+                const response = await fetch('/addComment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        comment: cmt,
+                        postid: postData.id
+                    })
+                });
+
+                if (!response.ok) {
+                    toast({ err: "faile to add comment", code: response.status })
+                    throw new Error(`Server error: ${response}`);
+                }
+                const result = await response.json();
+            console.log(result);
+            
+                comments.prepend(comment({content:cmt,created_at:Date.now(),user:result.user}))
+                commentIN.value = "";
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    })
+    loadComments(postData.id, 0, comments)
     let post = document.createElement('div')
     post.classList.add('post')
+    let show = document.createElement('button')
+    show.innerText = "comments"
     post.id = postData.id
     post.innerHTML = postHTML
-    post.addEventListener('click', () => {
-        showDetails(postData, id)
+    post.append(cmtsArea)
+    post.append(show)
+    show.addEventListener('click', () => {
+cmtsArea.classList.toggle('hide')
     })
     return post;
 }
@@ -171,11 +223,18 @@ function postinput(categories) {
             });
 
             if (!response.ok) {
+                toast({ err: "faile to add post", code: response.status })
                 throw new Error(`Server error: ${response}`);
             }
-
             const result = await response.json();
-            console.log('Post created successfully:', result);
+            postData.id = result.id
+            postData.publisher = result.publisher
+            form.querySelector('#post-content').value = ""
+            form.querySelector('#post-title').value= ""
+            Array.from(
+                form.querySelectorAll('input[name="categories"]:checked')
+            ).forEach(input => {input.checked =false})
+            document.querySelector('.posts').prepend(post(postData))
         } catch (error) {
             console.error('Failed to create post:', error);
         }
@@ -220,7 +279,7 @@ let msg = (msg, received) => {
         ${received ? msg.sender : "You"}
     </div>
     <div class="time">
-        ${msg.sent_at}
+        ${time(msg.sent_at)}
     </div>
 </div>
 <div class="content">
@@ -262,6 +321,8 @@ let persoChat = (ws) => {
                     content: data
                 }));
             }
+            document.querySelector('.leftsec').prepend(document.querySelector(`#${pChat.id}`))
+            chat.scrollTop = chat.scrollHeight
             input.value = "";
         } else if (ws && ws.readyState === WebSocket.OPEN && can) {
             can = false
@@ -275,6 +336,31 @@ let persoChat = (ws) => {
     });
     return pChat
 }
+export function time(inputDate) {
+    const date = new Date(inputDate);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    const intervals = [
+        { label: 'y', seconds: 31536000 },
+        { label: 'mo', seconds: 2592000 },
+        { label: 'w', seconds: 604800 },
+        { label: 'd', seconds: 86400 },
+        { label: 'h', seconds: 3600 },
+        { label: 'min', seconds: 60 },
+        { label: 's', seconds: 1 },
+    ];
+
+    for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+        if (count >= 1) {
+            return `${count}${interval.label} ago`;
+        }
+    }
+
+    return 'just now';
+}
+
 let header = () => {
     let header = document.createElement('header')
     let logout = document.createElement('button')
