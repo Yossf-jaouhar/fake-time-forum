@@ -50,7 +50,6 @@ func main() {
 	})
 
 	mux.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("111")
 		if r.Method != http.MethodPost {
 			response.Respond("method not 1", 405, w)
 			return
