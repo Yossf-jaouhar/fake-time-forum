@@ -1,5 +1,5 @@
 export let sort = () => {
-    let chat = document.querySelector('.leftsec')
+    let chat = document.querySelector('.bubblesholder')
     let bubles = [...document.querySelectorAll('.user')]
     let sorted = bubles.sort((a, b) => {
         const timeA = a.dataset.time ? new Date(a.dataset.time) : null;

@@ -5,7 +5,7 @@ export const wschat = () => {
   const socket = new WebSocket("/chat");
   let pChat = persoChat(socket);
   const chat = document.createElement("div");
-  chat.classList.add("leftsec");
+  chat.classList.add("bubblesholder");
   document.body.appendChild(chat);
   document.body.appendChild(pChat);
   window.addEventListener("logout", () => {
@@ -101,10 +101,17 @@ const HandleSts = (sender, chat, Chat) => {
   }
 };
 const HandleMsg = (mesg, pChat, chat) => {
-  let target = document.querySelector(`#${mesg.sender}`);
-  if (pChat.id === mesg.sender) {
-    let msgB = msg(mesg, true);
-    document.querySelector(".messages").append(msgB);
+  let target = document.querySelector(`#${pChat.id === mesg.sender ? mesg.sender : mesg.reciever}`);
+  if (pChat.id === mesg.sender || pChat.id === mesg.reciever) {
+    let msgB = msg(mesg, pChat.id === mesg.sender);
+    let msgs = document.querySelector(".messages")
+    msgs.append(msgB);
+    if (pChat.id === mesg.reciever) {
+      msgs.scrollTop = msgs.scrollHeight
+    }
   }
-  chat.prepend(target);
+  if (target) {
+    chat.prepend(target);
+  }
+
 };

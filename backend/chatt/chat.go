@@ -138,9 +138,22 @@ func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string, int) {
 		}
 		return "internal server error", 500
 	}
+	sCons := c.Map[msg.Sender]
 	if c.Map[msg.Reciever] != nil {
 		c.Lock()
 		for conn := range c.Map[msg.Reciever].Conn {
+			err := conn.WriteJSON(msg)
+			if err != nil {
+				fmt.Println(err)
+				c.Unlock()
+				return "err sending message", 500
+			}
+		}
+		c.Unlock()
+	}
+	if sCons != nil {
+		c.Lock()
+		for conn := range sCons.Conn {
 			err := conn.WriteJSON(msg)
 			if err != nil {
 				fmt.Println(err)

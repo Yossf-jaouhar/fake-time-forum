@@ -312,8 +312,6 @@ let persoChat = (ws) => {
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && input.value.trim() !== "") {
             let data = input.value.trim()
-            let mesg = msg({ sent_at: Date.now(), content: data }, false)
-            chat.append(mesg);
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: "message",
@@ -321,8 +319,6 @@ let persoChat = (ws) => {
                     content: data
                 }));
             }
-            document.querySelector('.leftsec').prepend(document.querySelector(`#${pChat.id}`))
-            chat.scrollTop = chat.scrollHeight
             input.value = "";
         } else if (ws && ws.readyState === WebSocket.OPEN && can) {
             can = false
