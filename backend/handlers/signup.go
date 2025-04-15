@@ -3,8 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
+	"unicode"
 
 	"forum/backend/response"
 
@@ -25,7 +28,6 @@ type User struct {
 }
 
 type datafromregister struct {
-	Username  string      `json:"username"`
 	Email     string      `json:"email"`
 	Password  string      `json:"password"`
 	Age       json.Number `json:"age"`
@@ -35,6 +37,46 @@ type datafromregister struct {
 	Nickname  string      `json:"nickname"`
 }
 
+func valid(d datafromregister) bool {
+	d.Email = strings.TrimSpace(d.Email)
+	d.Password = strings.TrimSpace(d.Password)
+	d.FirstName = strings.TrimSpace(d.FirstName)
+	d.LastName = strings.TrimSpace(d.LastName)
+	d.Gender = strings.ToLower(strings.TrimSpace(d.Gender))
+	d.Nickname = strings.TrimSpace(d.Nickname)
+	
+	if  d.Email == "" || d.Password == "" ||
+		d.FirstName == "" || d.LastName == "" || d.Gender == "" {
+		return false
+	}
+	if !strings.Contains(d.Email, "@") || !strings.Contains(d.Email, ".") {
+		return false
+	}
+	if len(d.Password) < 6 {
+		return false
+	}
+	age, err := d.Age.Int64()
+	fmt.Println(err)
+	if age < 8 || age > 100 || err != nil {
+		return false
+	}
+	if len(d.Nickname) < 3 {
+		return false
+	}
+	hasLetter := false
+	for _, r := range d.Nickname {
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) {
+			return false
+		}
+		if unicode.IsLetter(r) {
+			hasLetter = true
+		}
+	}
+	if !hasLetter {
+		return false
+	}
+	return d.Gender == "male" || d.Gender == "female"
+}
 func checkIfEmailOrNicknameExists(email, nickname string, db *sql.DB) (bool, bool) {
 	var emailExists, nicknameExists bool
 
@@ -58,10 +100,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var data datafromregister
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
+		fmt.Println(err)
 		response.Respond("Invalid JSON format", http.StatusBadRequest, w)
 		return
 	}
-
+	if !valid(data) {
+		response.Respond("invalid data", http.StatusBadRequest, w)
+		return
+	}
 	// Check if email or nickname is already taken
 	emailExists, nicknameExists := checkIfEmailOrNicknameExists(data.Email, data.Nickname, db)
 	if emailExists {

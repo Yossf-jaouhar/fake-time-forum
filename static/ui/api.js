@@ -21,7 +21,6 @@ async function register(registerData, loginTab, loginForm, registerTab, register
         registerForm.classList.add('hidden');
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred. Please try again later.");
     }
 }
 async function login(loginData) {
@@ -36,8 +35,6 @@ async function login(loginData) {
 
         if (!response.ok) {
             toast({ err: response.statusText, code: response.status })
-
-            console.log(response);
             throw new Error(`HTTP Error: ${response.status} `);
         }
         if (response.ok) {
