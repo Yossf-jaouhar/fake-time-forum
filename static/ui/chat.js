@@ -93,13 +93,11 @@ const InitUsers = (users, chat, pChat) => {
 const HandleSts = (sender, chat, Chat) => {
   let target = document.body.querySelector(`#${sender.name}`);
   if (!target) {
-    sender.time = "";
+    sender.time = null;
     target = userBubble(sender, Chat);
     chat.append(target);
     sort();
-  } else {
-    console.log(sender);
-    
+  } else {    
     if (sender.state) {
       target.classList.add("on");
     } else {

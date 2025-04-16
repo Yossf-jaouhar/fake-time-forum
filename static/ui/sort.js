@@ -8,10 +8,8 @@ export let sort = () => {
             return timeB - timeA;
         }
         if (!timeA && !timeB) {
-           
-            
             return a.id.localeCompare(b.id);
-        } console.log("me");
+        } 
         return timeA ? -1 : 1;
     })
     chat.innerHTML =""

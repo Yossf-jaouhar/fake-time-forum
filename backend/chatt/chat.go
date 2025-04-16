@@ -22,7 +22,7 @@ type (
 		Reciever string `json:"reciever"`
 		Sender   string `json:"sender"`
 		SentAt   string `json:"sent_at"`
-		Id   int `json:"id"`
+		Id       int    `json:"id"`
 	}
 )
 
@@ -31,6 +31,7 @@ func NewClients(db *sql.DB) *Clients {
 		Map: make(map[string]*Client),
 	}
 }
+
 func (c *Clients) ActiveSingal(nickname string, active string) {
 	c.Lock()
 	defer c.Unlock()
@@ -40,14 +41,16 @@ func (c *Clients) ActiveSingal(nickname string, active string) {
 		}
 		for conn := range client.Conn {
 			conn.WriteJSON(map[string]any{
-				"type":   "status",
-				"state": active=="online",
-				"name":   nickname,
+				"type":  "status",
+				"state": active == "online",
+				"name":  nickname,
 			})
 		}
 	}
 }
-func (c *Clients) GetClients(user string, db *sql.DB) []struct {
+
+func (c *Clients) GetClients(user string, db *sql.DB) []struct 
+{
 	Client string `json:"name"`
 	State  string `json:"state"`
 	Time   string `json:"time"`
@@ -67,7 +70,6 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 	
 	`, user, user, user)
 	if err != nil {
-		fmt.Println(err)
 		return nil
 	}
 	defer res.Close()
@@ -96,6 +98,7 @@ func (c *Clients) GetClients(user string, db *sql.DB) []struct {
 	}
 	return clients
 }
+
 func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message {
 	var res *sql.Rows
 	var err error
@@ -118,13 +121,13 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 		LIMIT 10
 	`, user1, user2, user2, user1)
 	}
-if err!=nil {
-	return nil
-}
+	if err != nil {
+		return nil
+	}
 	var messages []Message
 	for res.Next() {
 		var msg Message
-		res.Scan(&msg.Content, &msg.Sender, &msg.SentAt,&msg.Id)
+		res.Scan(&msg.Content, &msg.Sender, &msg.SentAt, &msg.Id)
 		messages = append(messages, msg)
 	}
 	return messages
@@ -165,6 +168,7 @@ func (c *Clients) SendMsg(msg *Message, db *sql.DB) (string, int) {
 	}
 	return "", 200
 }
+
 func (c *Clients) SendSingnals(msg *Message) string {
 	if c.Map[msg.Reciever] == nil {
 		return ""

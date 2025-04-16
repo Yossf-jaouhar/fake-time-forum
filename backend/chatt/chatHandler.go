@@ -12,10 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
+var upgrader = websocket.Upgrader{}
 
 func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Clients) {
 	conn, err := upgrader.Upgrade(w, r, nil)
