@@ -128,12 +128,9 @@ function post(postData) {
                     toast({ err: "faile to add comment", code: response.status })
                     throw new Error(`Server error: ${response}`);
                 }
-                const result = await response.json();
-            console.log(result);
-            
+                const result = await response.json();            
                 comments.prepend(comment({content:cmt,created_at:Date.now(),user:result.user}))
                 commentIN.value = "";
-
             } catch (error) {
                 console.error(error);
             }
@@ -257,6 +254,7 @@ let userBubble = (uData, personalChat) => {
     uBuble.append(indecator)
     uBuble.addEventListener('click', () => {
         msgs.innerHTML = ""
+        uBuble.classList.remove('note')
         personalChat.id = uData.name
         personalChat.classList.add("show")
         loadChat(uData.name, 0, msgs)
@@ -306,6 +304,7 @@ let persoChat = (ws) => {
     cancel.onclick = () => {
         pChat.classList.remove('show');
         chat.innerHTML = "";
+        pChat.id=""
         input.value = "";
     };
     let can = true

@@ -119,26 +119,30 @@ const HandleMsg = (mesg, pChat, chat) => {
     }
   }
   if (target) {
-    notify(target.id, pChat);
+    target.dataset.time = mesg.sent_at
+    if (target.id === mesg.sender&&pChat.id!==mesg.sender) {
+      target.classList.add("note");
+      notify(target, pChat);
+    }
     chat.prepend(target);
   }
 };
-const notify = (from, personalChat) => {
+const notify = (target, personalChat) => {
   let ntf = document.createElement("div");
   ntf.classList.add("notifications");
-  ntf.innerText = `message from ${from}`;
+  ntf.innerText = `message from ${target.id}`;
   document.body.append(ntf);
   const msgs = document.querySelector(".messages");
-  let e=setTimeout(() => {
+  let e = setTimeout(() => {
     ntf.remove();
   }, 3000);
   ntf.addEventListener("click", () => {
     msgs.innerHTML = "";
     ntf.remove();
-    clearTimeout(e)
-    personalChat.id = from;
+    clearTimeout(e);
+    target.classList.remove("note");
+    personalChat.id = target.id;
     personalChat.classList.add("show");
-    loadChat(from, 0, msgs);
+    loadChat(target.id, 0, msgs);
   });
-
 };

@@ -237,7 +237,9 @@ header button:focus {
   background-color: var(--white);
   border: 4px solid var(--primary-color);
 }
-
+.user.note{
+  background-color: #ff4e60;
+}
 .user:hover {
   background-color: var(--border-color);
   box-shadow: var(--shadow-md);
