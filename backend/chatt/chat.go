@@ -106,7 +106,7 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 		FROM chat 
 		WHERE ((sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)) 
 		  AND id < ?
-		ORDER BY createdAt DESC
+		ORDER BY id DESC
 		LIMIT 10
 	`, user1, user2, user2, user1, start)
 	} else {
@@ -114,7 +114,7 @@ func (c *Clients) GetChat(user1, user2 string, start int, db *sql.DB) []Message 
 		SELECT content, sender, createdAt , id
 		FROM chat 
 		WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) 
-		ORDER BY createdAt DESC
+		ORDER BY id DESC
 		LIMIT 10
 	`, user1, user2, user2, user1)
 	}

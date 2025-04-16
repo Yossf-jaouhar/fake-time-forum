@@ -98,7 +98,13 @@ const HandleSts = (sender, chat, Chat) => {
     chat.append(target);
     sort();
   } else {
-    target.classList.toggle("on");
+    console.log(sender);
+    
+    if (sender.state) {
+      target.classList.add("on");
+    } else {
+      target.classList.remove("on");
+    }
   }
 };
 const HandleMsg = (mesg, pChat, chat) => {
@@ -119,8 +125,8 @@ const HandleMsg = (mesg, pChat, chat) => {
     }
   }
   if (target) {
-    target.dataset.time = mesg.sent_at
-    if (target.id === mesg.sender&&pChat.id!==mesg.sender) {
+    target.dataset.time = mesg.sent_at;
+    if (target.id === mesg.sender && pChat.id !== mesg.sender) {
       target.classList.add("note");
       notify(target, pChat);
     }

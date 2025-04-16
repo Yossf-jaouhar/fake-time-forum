@@ -24,13 +24,14 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 		return
 	}
 	username := r.Context().Value("userName").(string)
-	Clients.ActiveSingal(username, "online")
+
 	if Clients.Map[username] == nil {
 		Clients.Map[username] = &Client{
 			Conn: make(map[*websocket.Conn]any),
 		}
 	}
 	Clients.Map[username].Conn[conn] = nil
+	Clients.ActiveSingal(username, "online")
 	defer func() {
 		fmt.Println("closing connection")
 		delete(Clients.Map[username].Conn, conn)
@@ -52,7 +53,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 			}
 			if writeErr := conn.WriteJSON(errMsg); writeErr != nil {
 				log.Printf("failed to notify client: %v", writeErr)
-				break 
+				break
 			}
 			continue
 		}

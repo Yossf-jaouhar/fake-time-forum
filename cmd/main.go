@@ -61,7 +61,7 @@ func main() {
 	// Home route
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			response.Respond("not found", 404, w)
+			http.Redirect(w, r, "/", 404)
 			return
 		}
 		handlers.Home(w, r, db)
