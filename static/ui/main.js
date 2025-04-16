@@ -1,4 +1,4 @@
-import { Categories, is } from "./api.js";
+import {  is } from "./api.js";
 import { initauth } from "./auth.js";
 import { renderMainPage } from "./render.js";
 

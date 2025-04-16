@@ -767,7 +767,29 @@ textarea {
 .toast.neutral {
   background-color: #6c757d; 
 }
+.notifications {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #333;
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  opacity: 0;
+  animation: fadeInOut 3s ease-in-out forwards;
+}
 
+/* Animation for fade-in and fade-out */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}
 @media (max-width: 600px) {
   .toast {
     bottom: 10px;

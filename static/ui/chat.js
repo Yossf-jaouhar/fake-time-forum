@@ -1,3 +1,4 @@
+import { loadChat } from "./api.js";
 import { persoChat, userBubble } from "./components.js";
 import { msg } from "./components.js";
 import { sort } from "./sort.js";
@@ -101,17 +102,43 @@ const HandleSts = (sender, chat, Chat) => {
   }
 };
 const HandleMsg = (mesg, pChat, chat) => {
-  let target = document.querySelector(`#${pChat.id === mesg.sender ? mesg.sender : mesg.reciever}`);
+  let target;
+  if (pChat.id === mesg.reciever || pChat.id === mesg.sender) {
+    target = document.querySelector(
+      `#${pChat.id === mesg.reciever ? mesg.reciever : mesg.sender}`
+    );
+  } else {
+    target = document.querySelector(`#${mesg.sender}`);
+  }
   if (pChat.id === mesg.sender || pChat.id === mesg.reciever) {
     let msgB = msg(mesg, pChat.id === mesg.sender);
-    let msgs = document.querySelector(".messages")
+    let msgs = document.querySelector(".messages");
     msgs.append(msgB);
     if (pChat.id === mesg.reciever) {
-      msgs.scrollTop = msgs.scrollHeight
+      msgs.scrollTop = msgs.scrollHeight;
     }
   }
   if (target) {
+    notify(target.id, pChat);
     chat.prepend(target);
   }
+};
+const notify = (from, personalChat) => {
+  let ntf = document.createElement("div");
+  ntf.classList.add("notifications");
+  ntf.innerText = `message from ${from}`;
+  document.body.append(ntf);
+  const msgs = document.querySelector(".messages");
+  let e=setTimeout(() => {
+    ntf.remove();
+  }, 3000);
+  ntf.addEventListener("click", () => {
+    msgs.innerHTML = "";
+    ntf.remove();
+    clearTimeout(e)
+    personalChat.id = from;
+    personalChat.classList.add("show");
+    loadChat(from, 0, msgs);
+  });
 
 };

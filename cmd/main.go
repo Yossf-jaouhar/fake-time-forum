@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	chat "forum/backend/chatt"
@@ -65,13 +66,13 @@ func main() {
 		}
 		handlers.Home(w, r, db)
 	})
-mux.HandleFunc("/fetchChat",midlware.Authorization(
-	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		chat.FetchChat(w, r,clients,db)
-	}), db))
-	mux.HandleFunc("/fetchComment",midlware.Authorization(
+	mux.HandleFunc("/fetchChat", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			chat.FetchChat(w, r,clients,db)
+			chat.FetchChat(w, r, clients, db)
+		}), db))
+	mux.HandleFunc("/fetchComment", midlware.Authorization(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			chat.FetchChat(w, r, clients, db)
 		}), db))
 	// Protected routes with authorization
 	mux.HandleFunc("/chat", midlware.Authorization(
@@ -97,11 +98,11 @@ mux.HandleFunc("/fetchChat",midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			handlers.GetCommentsHandler(w, r, db)
 		}), db))
-	   	mux.HandleFunc("/categories", midlware.Authorization(
-	   		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	   			handlers.Getcategories(w, r, db)
-	   		}), db))
-	   //deprecated
+	mux.HandleFunc("/categories", midlware.Authorization(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handlers.Getcategories(w, r, db)
+		}), db))
+	// deprecated
 
 	// Create server with timeouts
 	server := &http.Server{
@@ -119,7 +120,7 @@ mux.HandleFunc("/fetchChat",midlware.Authorization(
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
