@@ -21,11 +21,11 @@ type Comment struct {
 // Fetch comments for a specific post_id
 func fetchComments(postID, start int, db *sql.DB) ([]Comment, error) {
 	var comments []Comment
-	query := "SELECT id,ID_User, content, DateCreation FROM Comment WHERE ID_post = ? ORDER BY DateCreation DESC"
+	query := "SELECT id,ID_User, content, DateCreation FROM Comment WHERE ID_post = ? "
 	if start > 0 {
 		query += fmt.Sprintf(" AND id < %d", start)
 	}
-	query += " LIMIT 10"
+	query += " ORDER BY DateCreation DESC LIMIT 10"
 	// Query to fetch comments for the specified post ID
 	rows, err := db.Query(query, postID)
 	if err != nil {
@@ -80,6 +80,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	// Fetch comments for the given post ID
 	comments, err := fetchComments(postIDInt, start, db)
 	if err != nil {
+		fmt.Println(err,2)
 		response.Respond("error fetching comments", http.StatusInternalServerError, w)
 		return
 	}

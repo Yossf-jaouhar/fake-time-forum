@@ -63,6 +63,7 @@ let auth = () => `<div class="tabs">
 let comment = (comment) => {
     let cmment = document.createElement('div')
     cmment.classList.add('comment')
+    cmment.id=comment.id
     cmment.innerHTML = `
     <div class="comment-header">
         <span class="comment-author">${comment.user}</span>

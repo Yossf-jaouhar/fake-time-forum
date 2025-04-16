@@ -1,6 +1,6 @@
 
 import { Categories, loadPosts } from './api.js'
-import { wschat } from './chat.js'
+import { toast, wschat } from './chat.js'
 import { header, postinput } from './components.js'
 import { sort } from './sort.js'
 export let renderMainPage = async () => {
@@ -16,4 +16,5 @@ export let renderMainPage = async () => {
     wschat()
     document.body.append(right)
     sort()
+    toast({err:"logged in",code:200})
 }
