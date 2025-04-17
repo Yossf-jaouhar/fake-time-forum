@@ -10,6 +10,7 @@ export const wschat = () => {
   document.body.appendChild(chat);
   document.body.appendChild(pChat);
   window.addEventListener("logout", () => {
+    socket.send(JSON.stringify({ Type: "logout"}));
     socket.close();
   });
   socket.onmessage = (rm) => {

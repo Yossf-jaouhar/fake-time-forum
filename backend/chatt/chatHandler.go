@@ -65,9 +65,18 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, Clients *Cl
 			if err := Clients.SendSingnals(msg); err != "" {
 				conn.WriteJSON(map[string]any{"type": "err", "err": err, "code": 500})
 			}
+		case "logout":
+			Clients.clear(username)
+			break
 		default:
 			conn.WriteJSON(map[string]any{"type": "err", "err": "invalid message type", "code": http.StatusBadRequest})
 		}
 
+	}
+}
+
+func (c Clients) clear(user string) {
+	for c := range c.Map[user].Conn {
+		c.Close()
 	}
 }
