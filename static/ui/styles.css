@@ -213,7 +213,8 @@ header button:focus {
 
 .user {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  gap: 5px;
   margin: var(--spacing-sm) var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
   background-color: var(--background-color);
@@ -238,18 +239,15 @@ header button:focus {
   border: 4px solid var(--primary-color);
 }
 .user.note{
-  background-color: var(--primary-color);
+  background-color: #c4c9ce;
 }
 .user:hover {
   background-color: var(--border-color);
   box-shadow: var(--shadow-md);
 }
-
 .typing-indicator {
   display: flex;
   gap: 3px;
-  position: absolute;
-  bottom: -12px;
 }
 
 .typing-indicator span {
@@ -259,11 +257,9 @@ header button:focus {
   border-radius: 50%;
   animation: bounce 1.2s infinite ease-in-out;
 }
-
 .typing-indicator span:nth-child(2) {
   animation-delay: 0.2s;
 }
-
 .typing-indicator span:nth-child(3) {
   animation-delay: 0.4s;
 }
