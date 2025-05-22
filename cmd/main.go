@@ -15,6 +15,7 @@ import (
 	"forum/backend/handlers"
 	"forum/backend/midlware"
 	"forum/backend/response"
+	Auth "forum/backend/auth"
 )
 
 func main() {
@@ -31,7 +32,7 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	mux.HandleFunc("/auth", midlware.Authorization(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			Auth(w, r)
+	        Auth.Auth(w, r)
 		}), db))
 	// Auth routes - using proper method checking
 	mux.HandleFunc("/sign-in", func(w http.ResponseWriter, r *http.Request) {
